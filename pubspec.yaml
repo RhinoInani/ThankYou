@@ -1,0 +1,27 @@
+name: thank_you
+description: A new simplistic mobile donation tracker.
+publish_to: 'App Store and Play Store'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_speed_dial: ^4.1.0
+  google_fonts: ^2.1.0
+  intl: ^0.17.0
+  bottom_bar: ^1.2.4
+  shared_preferences: ^2.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
