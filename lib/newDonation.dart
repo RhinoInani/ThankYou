@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
-import '../constants.dart';
+import 'userValues.dart';
 
 class NewDonationsScreen extends StatefulWidget {
   NewDonationsScreen({Key? key, required this.isMoney}) : super(key: key);
@@ -19,39 +21,25 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   TextEditingController amountController = TextEditingController();
   TextEditingController itemController = TextEditingController();
 
-  Future<bool> onComplete() async {
-    late bool completed;
-    setState(() {
-      location.add("${recipientController.value.text.trim()}");
-      amount.add(amountController.value.text.replaceAll(',', ''));
-      date.add("${DateFormat.yMd('en_US').format(picked ??= DateTime.now())}");
-      itemDescription.add(itemController.value.text.trim());
-      item.add(widget.isMoney ? "0" : "1");
-      data.add(
-        DataRow(
-          cells: [
-            DataCell(
-              Text("${recipientController.value.text.trim()}"),
-            ),
-            DataCell(
-              Text(
-                double.parse(amountController.value.text.replaceAll(',', ''))
-                    .toString(),
-              ),
-            ),
-            DataCell(
-              Text(
-                  "${DateFormat.yMd('en_US').format(picked ??= DateTime.now())}"),
-            ),
-          ],
-        ),
-      );
-      recipientController.clear();
-      amountController.clear();
-      picked = DateTime.now();
-      completed = true;
-    });
-    return completed;
+  var donations = Hive.box('donations');
+
+  void setHive() {
+    var uuid = Uuid();
+    String id = uuid.v4();
+    donations.put(
+      id,
+      Item(
+        "${recipientController.value.text.trim()}",
+        itemController.value.text.trim(),
+        double.parse(amountController.value.text.replaceAll(',', '')),
+        picked == null ? DateTime.now() : picked,
+        widget.isMoney,
+        id,
+      ),
+    );
+    recipientController.clear();
+    amountController.clear();
+    picked = DateTime.now();
   }
 
   @override
@@ -118,8 +106,8 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      await _selectDate(context, widget.isMoney);
-                      setState(() {});
+                      await _selectDate(context, widget.isMoney)
+                          .then((value) => setState(() {}));
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -171,12 +159,9 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                     ),
                   ),
                   onTap: () async {
-                    bool complete = await onComplete();
-                    await setLocalData();
-                    if (complete) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/home', (Route<dynamic> route) => false);
-                    }
+                    setHive();
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/home', (Route<dynamic> route) => false);
                   },
                 ),
               ),

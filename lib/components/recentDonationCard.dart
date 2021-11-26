@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class RecentDonationsCard extends StatelessWidget {
   const RecentDonationsCard({
     Key? key,
-    required this.location,
+    required this.recipient,
     required this.amount,
     required this.date,
+    required this.isMoney,
     required this.item,
-    required this.itemDescription,
   }) : super(key: key);
 
-  final String location;
+  final String recipient;
   final String amount;
-  final String date;
+  final DateTime date;
+  final bool isMoney;
   final String item;
-  final String itemDescription;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class RecentDonationsCard extends StatelessWidget {
       ),
       width: size.width * 0.85,
       decoration: BoxDecoration(
-        color: item == "1"
+        color: !isMoney
             ? Color.fromRGBO(174, 213, 244, 1)
             : Color.fromRGBO(193, 225, 193, 1),
         borderRadius: BorderRadius.circular(10),
@@ -43,14 +44,14 @@ class RecentDonationsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: size.width * 0.7,
+            width: size.width * 0.8,
             child: Stack(
               children: [
                 Positioned(
                   left: size.width * 0.5,
                   child: Container(
                     child: Text(
-                      "$date",
+                      "${DateFormat.yMd().format(date)}",
                       style: TextStyle(
                         fontSize: size.height * 0.02,
                       ),
@@ -61,7 +62,7 @@ class RecentDonationsCard extends StatelessWidget {
                   child: Container(
                     width: size.width * 0.45,
                     child: Text(
-                      "$location",
+                      "$recipient",
                       maxLines: 3,
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
@@ -89,9 +90,9 @@ class RecentDonationsCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: item == "1"
+            child: !isMoney
                 ? Text(
-                    itemDescription,
+                    item,
                     style: TextStyle(
                       color: Colors.grey[700],
                     ),
