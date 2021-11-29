@@ -1,5 +1,5 @@
 name: thank_you
-description: A new simplistic mobile donation tracker.
+description: A new minimilstic mobile donation tracker.
 publish_to: 'App Store and Play Store'
 
 version: 1.0.0+1
@@ -15,11 +15,9 @@ dependencies:
   google_fonts: ^2.1.0
   intl: ^0.17.0
   bottom_bar: ^1.2.4
-  shared_preferences: ^2.0.6
   hive: ^2.0.4
   hive_flutter: ^1.1.0
   hive_generator: ^1.1.1
-  uuid: ^3.0.5
 
 dev_dependencies:
   flutter_test:

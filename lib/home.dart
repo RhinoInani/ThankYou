@@ -32,13 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (BuildContext context, index) {
-                Item card = box.getAt(index); //TODO: not sort lexicographically
+              (BuildContext context, num) {
+                int index = box.length - num - 1;
+                Item card = box.getAt(index);
                 return Dismissible(
-                  ///TODO: add confirm deleting
                   key: Key(card.date.toString()),
                   onDismissed: (direction) async {
-                    confirmDelete(size, card);
+                    await confirmDelete(size, card);
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
@@ -64,23 +64,59 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void confirmDelete(Size size, Item card) {
+  Future<void> confirmDelete(Size size, Item card) async {
     showDialog(
         context: context,
-        barrierLabel: "Confirm Delete",
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return Center(
             child: Container(
-              height: size.height * 0.1,
-              width: size.width * 0.5,
+              height: size.height * 0.2,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white,
+              ),
+              padding: EdgeInsets.all(size.width * 0.02),
               child: Column(
                 children: [
+                  Text(
+                    "Confirm Delete",
+                    style: TextStyle(
+                      fontSize: size.height * 0.03,
+                      color: kBlackColor,
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
+                    child: Text(
+                      "This action cannot be undone",
+                      style: TextStyle(
+                        fontSize: size.height * 0.013,
+                        color: kLightBlackColor,
+                      ),
+                    ),
+                  ),
                   OutlinedButton.icon(
                     onPressed: () async {
                       await box.delete(card.uuid);
+                      Navigator.of(context).pop();
                     },
-                    icon: Icon(Icons.check),
-                    label: Text("Confirm Delete"),
+                    icon: Icon(
+                      Icons.check,
+                      color: kBlackColor,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    label: Text(
+                      "Confirm",
+                      style: TextStyle(
+                        fontSize: size.height * 0.02,
+                        color: kBlackColor,
+                      ),
+                    ),
                   ),
                 ],
               ),

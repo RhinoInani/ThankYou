@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:thank_you/settings.dart';
 import 'package:thank_you/tables.dart';
 import 'package:thank_you/userValues.dart';
 
@@ -13,6 +14,7 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(ItemAdapter());
   await Hive.openBox('donations');
+  await Hive.openBox('userValues');
   runApp(MyApp());
 }
 
@@ -125,7 +127,7 @@ class _HolderState extends State<Holder> {
         children: [
           SpeedDialChild(
             child: Icon(Icons.attach_money_rounded),
-            backgroundColor: Color.fromRGBO(193, 225, 193, 1),
+            backgroundColor: mainGreen,
             label: 'Money',
             labelStyle: TextStyle(fontSize: 16.0),
             onTap: () {
@@ -138,7 +140,7 @@ class _HolderState extends State<Holder> {
             child: Icon(
               Icons.shopping_bag_outlined,
             ),
-            backgroundColor: Color.fromRGBO(140, 213, 255, 1),
+            backgroundColor: mainBlue,
             label: 'Item',
             labelStyle: TextStyle(fontSize: 16.0),
             onTap: () {
@@ -153,10 +155,9 @@ class _HolderState extends State<Holder> {
             label: 'Settings',
             labelStyle: TextStyle(fontSize: 16.0),
             onTap: () {
-              // Navigator.of(context)
-              //     .push(MaterialPageRoute(builder: (context) {
-              //   return SettingsScreen();
-              // }));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return SettingsScreen();
+              }));
             },
           )
         ],

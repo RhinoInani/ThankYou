@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thank_you/userValues.dart';
 
 class RecentDonationsCard extends StatelessWidget {
   const RecentDonationsCard({
@@ -28,9 +29,7 @@ class RecentDonationsCard extends StatelessWidget {
       ),
       width: size.width * 0.85,
       decoration: BoxDecoration(
-        color: !isMoney
-            ? Color.fromRGBO(174, 213, 244, 1)
-            : Color.fromRGBO(193, 225, 193, 1),
+        color: !isMoney ? mainBlue : mainGreen,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(

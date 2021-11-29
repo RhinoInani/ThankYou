@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
 import 'userValues.dart';
 
@@ -22,10 +21,10 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   TextEditingController itemController = TextEditingController();
 
   var donations = Hive.box('donations');
+  var userValues = Hive.box('userValues');
 
   void setHive() {
-    var uuid = Uuid();
-    String id = uuid.v4();
+    String id = userValues.get('donationsCount', defaultValue: '0').toString();
     donations.put(
       id,
       Item(
@@ -37,6 +36,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
         id,
       ),
     );
+    userValues.put('donationsCount', (int.parse(id) + 1).toString());
     recipientController.clear();
     amountController.clear();
     picked = DateTime.now();
