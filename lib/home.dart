@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:thank_you/userValues.dart';
 
@@ -38,7 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Dismissible(
                   key: Key(card.date.toString()),
                   onDismissed: (direction) async {
-                    await confirmDelete(size, card);
+                    // await confirmDelete(size, card);
+                    await box.delete(card.uuid);
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
@@ -155,15 +157,15 @@ class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
             child: AppBar(
               backgroundColor: Colors.transparent,
               elevation: 0.0,
+              centerTitle: true,
               title: Opacity(
                 opacity: hideTitleWhenExpanded ? 1.0 - percent : 1.0,
                 child: Text(
                   "Recent Donations",
-                  style: TextStyle(
+                  style: GoogleFonts.comfortaa(
                     color: Colors.black,
                     fontSize: size.width * 0.065,
                     fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
@@ -184,6 +186,7 @@ class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
                   ),
                   elevation: 20.0,
                   child: Center(
+                    //TODO: make font size bigger and implement carousal to shift between data sets
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [

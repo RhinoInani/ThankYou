@@ -35,6 +35,12 @@ class MyApp extends StatelessWidget {
             opacity: 0.9,
           ),
         ),
+        dividerTheme: DividerThemeData(
+          color: kLightBlackColor,
+          endIndent: 30,
+          indent: 30,
+          thickness: 0.5,
+        ),
         textTheme: GoogleFonts.comfortaaTextTheme(),
       ),
       home: Holder(),
