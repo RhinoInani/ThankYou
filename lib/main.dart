@@ -30,6 +30,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: AppBarTheme(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
           iconTheme: IconThemeData(
             color: kBlackColor,
             opacity: 0.9,

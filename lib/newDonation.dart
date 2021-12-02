@@ -36,7 +36,8 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
         id,
       ),
     );
-    userValues.put('donationsCount', (int.parse(id) + 1).toString());
+    int donationsCount = int.parse(id) + 1;
+    userValues.put('donationsCount', (donationsCount).toString());
     recipientController.clear();
     amountController.clear();
     picked = DateTime.now();

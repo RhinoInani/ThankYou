@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (BuildContext context, num) {
+              (BuildContext context, int num) {
                 int index = box.length - num - 1;
                 Item card = box.getAt(index);
                 return Dismissible(
@@ -49,11 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     width: size.width * 0.85,
                     child: RecentDonationsCard(
-                      recipient: card.recipient!,
-                      amount: card.amount!.toString(),
-                      date: card.date!,
-                      isMoney: card.isMoney!,
-                      item: card.item!,
+                      item: card,
                     ),
                   ),
                 );
