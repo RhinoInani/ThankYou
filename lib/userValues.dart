@@ -10,11 +10,15 @@ const kLightBlackColor = Color(0xFF8F8F8F);
 const mainGreen = Color.fromRGBO(193, 225, 193, 1);
 const mainBlue = Color.fromRGBO(174, 213, 244, 1);
 
+double target = 0.00;
+double remainder = 0.00;
+double donated = 0.00;
+
 //counter
 double userCounter = 0;
 
-//DO NOT ALTER CODE UNDER THIS LINE
-//if you do run: flutter packages pub run build_runner build
+///DO NOT ALTER CODE UNDER THIS LINE
+///if you do run: flutter packages pub run build_runner build
 
 @HiveType(typeId: 2)
 class Item extends HiveObject {

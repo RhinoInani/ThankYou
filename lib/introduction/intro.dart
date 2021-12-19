@@ -1,0 +1,119 @@
+import 'package:flutter/material.dart';
+import 'package:introduction_screen/introduction_screen.dart';
+import 'package:thank_you/userValues.dart';
+
+class Introduction extends StatefulWidget {
+  const Introduction({Key? key}) : super(key: key);
+
+  @override
+  State<Introduction> createState() => _IntroductionState();
+}
+
+class _IntroductionState extends State<Introduction> {
+  AssetImage image1 = AssetImage('assets/donation1.gif');
+  AssetImage image2 = AssetImage('assets/donation2.gif');
+  AssetImage image3 = AssetImage('assets/donation3.gif');
+
+  @override
+  void dispose() {
+    super.dispose();
+    image1.evict();
+    image2.evict();
+    image3.evict();
+  }
+
+  void setGoals() {}
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
+    PageDecoration pageDecoration = PageDecoration(
+      titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
+      bodyTextStyle: TextStyle(fontSize: size.width * 0.03),
+      descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+      pageColor: Colors.white,
+      imagePadding: EdgeInsets.zero,
+    );
+
+    return Scaffold(
+      body: IntroductionScreen(
+        isProgress: true,
+        globalBackgroundColor: Colors.white,
+        showDoneButton: false,
+        showNextButton: true,
+        showSkipButton: false,
+        next: Text(
+          "Next",
+          style: TextStyle(color: kBlackColor, fontWeight: FontWeight.w600),
+        ),
+        curve: Curves.fastLinearToSlowEaseIn,
+        controlsMargin: const EdgeInsets.all(16),
+        controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+        dotsDecorator: const DotsDecorator(
+          size: Size(10.0, 10.0),
+          color: kLightBlackColor,
+          activeSize: Size(22.0, 10.0),
+          activeColor: kBlackColor,
+          activeShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(25.0)),
+          ),
+        ),
+        dotsContainerDecorator: const ShapeDecoration(
+          color: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          ),
+        ),
+        isTopSafeArea: true,
+        pages: [
+          PageViewModel(
+            title: "Keep track of your donations",
+            body: "Never forget what your tax deducible amount is again!",
+            image: Image(
+              image: image1,
+              repeat: ImageRepeat.repeat,
+            ),
+            decoration: pageDecoration,
+          ),
+          PageViewModel(
+            title: "Set Personal Goals",
+            body:
+                "Set goals for how much you would like to donate each year, and "
+                "\"Thank You\" will keep track of how far along you are with this process",
+            image: Image(
+              image: image2,
+            ),
+            footer: ElevatedButton(
+              ///TODO: set goals not implemented yet
+              onPressed: () {
+                print('test');
+              },
+              child: const Text(
+                'Set Goals',
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.lightBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+            decoration: pageDecoration,
+          ),
+          PageViewModel(
+            title: "Give back to the community",
+            body:
+                "Here at Thank You we believe in giving back to the community,"
+                "with a minimalistic interface it is easy for you to track your donations!",
+            image: Image(
+              image: image3,
+            ),
+            decoration: pageDecoration,
+          ),
+        ],
+      ),
+    );
+  }
+}

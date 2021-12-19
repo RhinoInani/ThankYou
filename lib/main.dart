@@ -8,13 +8,18 @@ import 'package:thank_you/tables.dart';
 import 'package:thank_you/userValues.dart';
 
 import 'home.dart';
+import 'introduction/intro.dart';
 import 'newDonation.dart';
 
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(ItemAdapter());
-  await Hive.openBox('donations');
   await Hive.openBox('userValues');
+  Box userValues = Hive.box('userValues');
+  target = await userValues.get('target', defaultValue: 1000.00);
+  donated = await userValues.get('donated', defaultValue: 0.00);
+  remainder = target - donated;
+  await Hive.openBox('donations');
   runApp(MyApp());
 }
 
@@ -167,7 +172,20 @@ class _HolderState extends State<Holder> {
                 return SettingsScreen();
               }));
             },
-          )
+          ),
+          SpeedDialChild(
+            child: Icon(
+              Icons.star,
+            ),
+            backgroundColor: mainBlue,
+            label: 'Intro',
+            labelStyle: TextStyle(fontSize: 16.0),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return Introduction();
+              }));
+            },
+          ),
         ],
       ),
     );

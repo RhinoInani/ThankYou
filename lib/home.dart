@@ -14,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var box = Hive.box('donations');
+  var donations = Hive.box('donations');
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int num) {
-                int index = box.length - num - 1;
-                Item card = box.getAt(index);
+                int index = donations.length - num - 1;
+                Item card = donations.getAt(index);
                 return Dismissible(
                   key: Key(card.date.toString()),
                   onDismissed: (direction) async {
                     // await confirmDelete(size, card);
-                    await box.delete(card.uuid);
+                    await donations.delete(card.uuid);
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
-              childCount: box.length,
+              childCount: donations.length,
             ),
           ),
         ],
@@ -62,66 +62,67 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> confirmDelete(Size size, Item card) async {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Center(
-            child: Container(
-              height: size.height * 0.2,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-              ),
-              padding: EdgeInsets.all(size.width * 0.02),
-              child: Column(
-                children: [
-                  Text(
-                    "Confirm Delete",
-                    style: TextStyle(
-                      fontSize: size.height * 0.03,
-                      color: kBlackColor,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
-                    child: Text(
-                      "This action cannot be undone",
-                      style: TextStyle(
-                        fontSize: size.height * 0.013,
-                        color: kLightBlackColor,
-                      ),
-                    ),
-                  ),
-                  OutlinedButton.icon(
-                    onPressed: () async {
-                      await box.delete(card.uuid);
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(
-                      Icons.check,
-                      color: kBlackColor,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    label: Text(
-                      "Confirm",
-                      style: TextStyle(
-                        fontSize: size.height * 0.02,
-                        color: kBlackColor,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
+  ///CONFIRM DELETE
+  // Future<void> confirmDelete(Size size, Item card) async {
+  //   showDialog(
+  //       context: context,
+  //       barrierDismissible: false,
+  //       builder: (BuildContext context) {
+  //         return Center(
+  //           child: Container(
+  //             height: size.height * 0.2,
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(15),
+  //               color: Colors.white,
+  //             ),
+  //             padding: EdgeInsets.all(size.width * 0.02),
+  //             child: Column(
+  //               children: [
+  //                 Text(
+  //                   "Confirm Delete",
+  //                   style: TextStyle(
+  //                     fontSize: size.height * 0.03,
+  //                     color: kBlackColor,
+  //                   ),
+  //                 ),
+  //                 Padding(
+  //                   padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
+  //                   child: Text(
+  //                     "This action cannot be undone",
+  //                     style: TextStyle(
+  //                       fontSize: size.height * 0.013,
+  //                       color: kLightBlackColor,
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 OutlinedButton.icon(
+  //                   onPressed: () async {
+  //                     await box.delete(card.uuid);
+  //                     Navigator.of(context).pop();
+  //                   },
+  //                   icon: Icon(
+  //                     Icons.check,
+  //                     color: kBlackColor,
+  //                   ),
+  //                   style: OutlinedButton.styleFrom(
+  //                     shape: RoundedRectangleBorder(
+  //                       borderRadius: BorderRadius.circular(15),
+  //                     ),
+  //                   ),
+  //                   label: Text(
+  //                     "Confirm",
+  //                     style: TextStyle(
+  //                       fontSize: size.height * 0.02,
+  //                       color: kBlackColor,
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 }
 
 class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
@@ -138,6 +139,7 @@ class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
+    var userValues = Hive.box('userValues');
     final appBarSize = expandedHeight - shrinkOffset;
     final cardTopPosition = expandedHeight / 2 - shrinkOffset;
     final proportion = 2 - (expandedHeight / appBarSize);
@@ -189,17 +191,24 @@ class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
                         UnboldBoldText(
                           size: size,
                           unbold: "Target Amount: ",
-                          bold: "\$0.00",
+                          bold: "\$${target.toStringAsFixed(2)}",
+                          color: kBlackColor,
                         ),
                         UnboldBoldText(
                           size: size,
                           unbold: "Remainder Balance: ",
-                          bold: "\$0.00",
+                          bold: "\$${remainder.toStringAsFixed(2)}",
+                          //.toStringAsFixed makes it so that the values are rounded to two decimals places
+                          //use throughout code !
+                          color: kBlackColor,
                         ),
                         UnboldBoldText(
                           size: size,
                           unbold: "Amount Donated: ",
-                          bold: "\$0.00",
+                          bold: "\$${donated.toStringAsFixed(2)}",
+                          color: donated >= target
+                              ? Colors.lightGreen
+                              : kBlackColor,
                         ),
                       ],
                     ),
