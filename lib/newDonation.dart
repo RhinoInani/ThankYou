@@ -23,7 +23,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   var donations = Hive.box('donations');
   var userValues = Hive.box('userValues');
 
-  void setHive() {
+  Future<void> setHive() async {
     String id = userValues.get('donationsCount', defaultValue: '0').toString();
     donations.put(
       id,
@@ -36,16 +36,17 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
         id,
       ),
     );
+
+    double currentDonated = userValues.get('donated', defaultValue: 0.00);
+    donated = currentDonated +
+        double.parse(amountController.value.text.replaceAll(',', ''));
+    await setDonations();
     int donationsCount = int.parse(id) + 1;
-    double currentDonated = userValues.get('amountDonated', defaultValue: 0.00);
-    userValues.put(
-        'donated',
-        currentDonated +
-            double.parse(amountController.value.text.replaceAll(',', '')));
     userValues.put('donationsCount', donationsCount.toString());
     recipientController.clear();
     amountController.clear();
     picked = DateTime.now();
+    setState(() {});
   }
 
   @override
@@ -87,6 +88,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                 textController: recipientController,
                 text: "Recipient",
                 isAmount: false,
+                isTarget: false,
               ),
               widget.isMoney
                   ? Container()
@@ -94,11 +96,13 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                       textController: itemController,
                       text: "Item",
                       isAmount: false,
+                      isTarget: false,
                     ),
               DonationsTextField(
                 textController: amountController,
                 text: widget.isMoney ? "Amount:" : "Value",
                 isAmount: true,
+                isTarget: false,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -211,14 +215,16 @@ class DonationsTextField extends StatefulWidget {
       {Key? key,
       required this.textController,
       required this.text,
-      required this.isAmount})
+      required this.isAmount,
+      required this.isTarget})
       : super(key: key);
 
   final TextEditingController textController;
   final String text;
   final bool isAmount;
+  final bool isTarget;
 
-  static const _locale = 'en';
+  static const locale = 'en';
 
   @override
   _DonationsTextFieldState createState() => _DonationsTextFieldState();
@@ -226,13 +232,17 @@ class DonationsTextField extends StatefulWidget {
 
 class _DonationsTextFieldState extends State<DonationsTextField> {
   String get _currency =>
-      NumberFormat.compactSimpleCurrency(locale: DonationsTextField._locale)
+      NumberFormat.compactSimpleCurrency(locale: DonationsTextField.locale)
           .currencySymbol;
 
   String errorText = "";
 
   @override
   Widget build(BuildContext context) {
+    Box? userValues;
+    if (widget.isTarget) {
+      userValues = Hive.box('userValues');
+    }
     Size size = MediaQuery.of(context).size;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,6 +293,10 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
                       name: '',
                       decimalDigits: 2,
                     ).format((double.parse(replacedString.trim())));
+                    if (widget.isTarget) {
+                      userValues!
+                          .put('target', double.parse(replacedString.trim()));
+                    }
                   })
                 : string = string;
           },

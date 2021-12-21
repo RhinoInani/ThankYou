@@ -18,6 +18,7 @@ void main() async {
   Box userValues = Hive.box('userValues');
   target = await userValues.get('target', defaultValue: 1000.00);
   donated = await userValues.get('donated', defaultValue: 0.00);
+  firstTime = await userValues.get('firstTime', defaultValue: true);
   remainder = target - donated;
   await Hive.openBox('donations');
   runApp(MyApp());
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
         ),
         textTheme: GoogleFonts.comfortaaTextTheme(),
       ),
-      home: Holder(),
+      home: firstTime ? Introduction() : Holder(),
     );
   }
 }
@@ -170,19 +171,6 @@ class _HolderState extends State<Holder> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return SettingsScreen();
-              }));
-            },
-          ),
-          SpeedDialChild(
-            child: Icon(
-              Icons.star,
-            ),
-            backgroundColor: mainBlue,
-            label: 'Intro',
-            labelStyle: TextStyle(fontSize: 16.0),
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return Introduction();
               }));
             },
           ),

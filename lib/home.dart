@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   var donations = Hive.box('donations');
+  var userValues = Hive.box('userValues');
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   onDismissed: (direction) async {
                     // await confirmDelete(size, card);
                     await donations.delete(card.uuid);
+                    setState(() {
+                      donated -= card.amount!;
+                    });
+                    await setDonations();
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(
@@ -176,42 +181,43 @@ class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
             bottom: 0.0,
             child: Opacity(
               opacity: percent,
-              child: Padding(
+              child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 30 * percent),
                 child: Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
                   elevation: 20.0,
-                  child: Center(
-                    //TODO: make font size bigger and implement carousal to shift between data sets
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        UnboldBoldText(
-                          size: size,
-                          unbold: "Target Amount: ",
-                          bold: "\$${target.toStringAsFixed(2)}",
-                          color: kBlackColor,
-                        ),
-                        UnboldBoldText(
-                          size: size,
-                          unbold: "Remainder Balance: ",
-                          bold: "\$${remainder.toStringAsFixed(2)}",
-                          //.toStringAsFixed makes it so that the values are rounded to two decimals places
-                          //use throughout code !
-                          color: kBlackColor,
-                        ),
-                        UnboldBoldText(
-                          size: size,
-                          unbold: "Amount Donated: ",
-                          bold: "\$${donated.toStringAsFixed(2)}",
-                          color: donated >= target
-                              ? Colors.lightGreen
-                              : kBlackColor,
-                        ),
-                      ],
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      UnboldBoldText(
+                        size: size,
+                        unbold: "Target Amount: ",
+                        bold: "\$${target.toStringAsFixed(2)}",
+                        color: kBlackColor,
+                      ),
+                      UnboldBoldText(
+                        size: size,
+                        unbold: "Amount Donated: ",
+                        bold: "\$${donated.toStringAsFixed(2)}",
+                        //.toStringAsFixed makes it so that the values are rounded to two decimals places
+                        //use throughout code !
+                        color: kBlackColor,
+                      ),
+                      Divider(
+                        height: 1,
+                      ),
+                      UnboldBoldText(
+                        size: size,
+                        unbold: "Remainder Balance: ",
+                        bold: "\$${remainder.toStringAsFixed(2)}",
+                        color:
+                            donated >= target ? Colors.lightGreen : kBlackColor,
+                      ),
+                    ],
                   ),
                 ),
               ),

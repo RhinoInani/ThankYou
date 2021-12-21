@@ -13,9 +13,14 @@ const mainBlue = Color.fromRGBO(174, 213, 244, 1);
 double target = 0.00;
 double remainder = 0.00;
 double donated = 0.00;
+bool firstTime = true;
 
-//counter
-double userCounter = 0;
+//function to set the donations to the value donated and also set the remainder balance to the proper locations
+Future<void> setDonations() async {
+  Box userValues = Hive.box('userValues');
+  await userValues.put('donated', donated);
+  remainder = target - donated;
+}
 
 ///DO NOT ALTER CODE UNDER THIS LINE
 ///if you do run: flutter packages pub run build_runner build

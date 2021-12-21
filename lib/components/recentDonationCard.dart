@@ -87,7 +87,7 @@ class RecentDonationsCard extends StatelessWidget {
               child: Container(
                 width: size.width * 0.55,
                 child: Text(
-                  "\$${item.amount!}",
+                  "\$${item.amount!.toStringAsFixed(2)}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: size.height * 0.025,

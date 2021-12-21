@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../userValues.dart';
+import '../userValues.dart';
 
 class UnboldBoldText extends StatelessWidget {
   const UnboldBoldText({
@@ -19,22 +19,45 @@ class UnboldBoldText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(size.height * 0.01),
-      child: RichText(
-        text: TextSpan(
-          style: TextStyle(
-            fontSize: size.width * 0.043,
-            color: kLightBlackColor.withBlue(kLightBlackColor.blue + 15),
-          ),
+        padding: EdgeInsets.all(size.height * 0.01),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            TextSpan(text: "$unbold"),
-            TextSpan(
-              text: "$bold",
-              style: TextStyle(fontWeight: FontWeight.w600, color: color),
+            Text(
+              "$unbold",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                fontSize: size.width * 0.043,
+                color: kLightBlackColor.withBlue(kLightBlackColor.blue + 15),
+              ),
+            ),
+            Text(
+              "$bold",
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: size.width * 0.043,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+
+        //RichText(
+        //         text: TextSpan(
+        //           style: TextStyle(
+        //             fontSize: size.width * 0.043,
+        //             color: kLightBlackColor.withBlue(kLightBlackColor.blue + 15),
+        //           ),
+        //           children: [
+        //             TextSpan(text: "$unbold"),
+        //             TextSpan(
+        //               text: "$bold",
+        //               style: TextStyle(fontWeight: FontWeight.w600, color: color),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        );
   }
 }

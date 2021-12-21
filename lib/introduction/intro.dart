@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:thank_you/newDonation.dart';
 import 'package:thank_you/userValues.dart';
+
+import '../main.dart';
 
 class Introduction extends StatefulWidget {
   const Introduction({Key? key}) : super(key: key);
@@ -14,6 +18,9 @@ class _IntroductionState extends State<Introduction> {
   AssetImage image2 = AssetImage('assets/donation2.gif');
   AssetImage image3 = AssetImage('assets/donation3.gif');
 
+  bool goalsSet = false;
+  Box userValues = Hive.box('userValues');
+
   @override
   void dispose() {
     super.dispose();
@@ -22,7 +29,66 @@ class _IntroductionState extends State<Introduction> {
     image3.evict();
   }
 
-  void setGoals() {}
+  TextEditingController controller = TextEditingController();
+
+  void setGoals() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 10.0,
+            vertical: 10,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Set your goals"),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DonationsTextField(
+                    textController: controller,
+                    isAmount: true,
+                    text: 'Set a Target Amount',
+                    isTarget: true,
+                  ),
+                ),
+                //TODO: complete this with keyboard setting
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    target = double.parse(controller.value.text);
+                    await userValues.put('target', target);
+                    await setDonations();
+                    Navigator.of(context).pop();
+                    goalsSet = true;
+                  },
+                  icon: Icon(Icons.check),
+                  label: Text(
+                    "Set",
+                    style: TextStyle(color: kBlackColor),
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      elevation: 15,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(MediaQuery.of(context).size.height * 0.02),
+            topRight:
+                Radius.circular(MediaQuery.of(context).size.height * 0.02)),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +106,24 @@ class _IntroductionState extends State<Introduction> {
       body: IntroductionScreen(
         isProgress: true,
         globalBackgroundColor: Colors.white,
-        showDoneButton: false,
+        showDoneButton: true,
         showNextButton: true,
         showSkipButton: false,
+        done: Text(
+          "Done",
+          style: TextStyle(color: kBlackColor, fontWeight: FontWeight.w600),
+        ),
+        onDone: () async {
+          if (goalsSet) {
+            await userValues.put('firstTime', false);
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (BuildContext context) {
+              return Holder();
+            }));
+          } else {
+            setGoals();
+          }
+        },
         next: Text(
           "Next",
           style: TextStyle(color: kBlackColor, fontWeight: FontWeight.w600),
@@ -85,19 +166,17 @@ class _IntroductionState extends State<Introduction> {
               image: image2,
             ),
             footer: ElevatedButton(
-              ///TODO: set goals not implemented yet
               onPressed: () {
-                print('test');
+                setGoals();
               },
-              child: const Text(
-                'Set Goals',
-                style: TextStyle(color: Colors.white),
+              child: Text(
+                "Set goals",
+                style: TextStyle(color: kBlackColor),
               ),
               style: ElevatedButton.styleFrom(
-                primary: Colors.lightBlue,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+                    borderRadius: BorderRadius.circular(15)),
+                primary: mainGreen.withGreen(mainGreen.green + 8),
               ),
             ),
             decoration: pageDecoration,
