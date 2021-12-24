@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:thank_you/userValues.dart';
 
-import 'components/recentDonationCard.dart';
-import 'components/unboldBoldText.dart';
+import '../components/recentDonationCard.dart';
+import '../components/unboldBoldText.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

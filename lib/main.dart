@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:thank_you/settings.dart';
-import 'package:thank_you/tables.dart';
+import 'package:thank_you/main_screens//settings.dart';
+import 'package:thank_you/main_screens/home.dart';
+import 'package:thank_you/main_screens/tables.dart';
 import 'package:thank_you/userValues.dart';
 
-import 'home.dart';
 import 'introduction/intro.dart';
 import 'newDonation.dart';
 

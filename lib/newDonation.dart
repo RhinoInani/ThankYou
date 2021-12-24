@@ -46,7 +46,6 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
     recipientController.clear();
     amountController.clear();
     picked = DateTime.now();
-    setState(() {});
   }
 
   @override
@@ -169,7 +168,9 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                     ),
                   ),
                   onTap: () async {
-                    setHive();
+                    setState(() {
+                      setHive();
+                    });
                     Navigator.of(context).pushNamedAndRemoveUntil(
                         '/home', (Route<dynamic> route) => false);
                   },

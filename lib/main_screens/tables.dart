@@ -2,8 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-
-import 'userValues.dart';
+import 'package:thank_you/userValues.dart';
 
 class TablesScreen extends StatefulWidget {
   const TablesScreen({Key? key}) : super(key: key);

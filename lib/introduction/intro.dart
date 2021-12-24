@@ -31,18 +31,19 @@ class _IntroductionState extends State<Introduction> {
 
   TextEditingController controller = TextEditingController();
 
-  void setGoals() {
+  void setGoals(context) {
+    Size size = MediaQuery.of(context).size;
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Container(
+          height: size.height * 0.6,
           padding: EdgeInsets.symmetric(
             horizontal: 10.0,
             vertical: 10,
           ),
           child: SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -57,20 +58,20 @@ class _IntroductionState extends State<Introduction> {
                     isTarget: true,
                   ),
                 ),
-                //TODO: complete this with keyboard setting
-                ElevatedButton.icon(
+                ElevatedButton(
                   onPressed: () async {
-                    target = double.parse(controller.value.text);
+                    target =
+                        double.parse(controller.value.text.replaceAll(',', ''));
                     await userValues.put('target', target);
                     await setDonations();
                     Navigator.of(context).pop();
                     goalsSet = true;
                   },
-                  icon: Icon(Icons.check),
-                  label: Text(
+                  child: Text(
                     "Set",
                     style: TextStyle(color: kBlackColor),
                   ),
+                  style: setButtonStyle(),
                 )
               ],
             ),
@@ -87,6 +88,13 @@ class _IntroductionState extends State<Introduction> {
             topRight:
                 Radius.circular(MediaQuery.of(context).size.height * 0.02)),
       ),
+    );
+  }
+
+  ButtonStyle setButtonStyle() {
+    return ElevatedButton.styleFrom(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      primary: mainGreen.withGreen(mainGreen.green + 8),
     );
   }
 
@@ -121,7 +129,7 @@ class _IntroductionState extends State<Introduction> {
               return Holder();
             }));
           } else {
-            setGoals();
+            setGoals(context);
           }
         },
         next: Text(
@@ -167,17 +175,13 @@ class _IntroductionState extends State<Introduction> {
             ),
             footer: ElevatedButton(
               onPressed: () {
-                setGoals();
+                setGoals(context);
               },
               child: Text(
                 "Set goals",
                 style: TextStyle(color: kBlackColor),
               ),
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                primary: mainGreen.withGreen(mainGreen.green + 8),
-              ),
+              style: setButtonStyle(),
             ),
             decoration: pageDecoration,
           ),

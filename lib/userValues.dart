@@ -18,8 +18,8 @@ bool firstTime = true;
 //function to set the donations to the value donated and also set the remainder balance to the proper locations
 Future<void> setDonations() async {
   Box userValues = Hive.box('userValues');
-  await userValues.put('donated', donated);
   remainder = target - donated;
+  await userValues.put('donated', donated);
 }
 
 ///DO NOT ALTER CODE UNDER THIS LINE
