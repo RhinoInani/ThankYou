@@ -19,6 +19,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   TextEditingController recipientController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   TextEditingController itemController = TextEditingController();
+  TextEditingController notesController = TextEditingController();
 
   var donations = Hive.box('donations');
   var userValues = Hive.box('userValues');
@@ -34,6 +35,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
         picked == null ? DateTime.now() : picked,
         widget.isMoney,
         id,
+        '''${notesController.value.text.trim()}''',
       ),
     );
 
@@ -52,11 +54,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      resizeToAvoidBottomInset: false,
+      appBar: AppBar(),
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
         children: [
@@ -89,18 +87,25 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                 isAmount: false,
                 isTarget: false,
               ),
-              widget.isMoney
-                  ? Container()
-                  : DonationsTextField(
-                      textController: itemController,
-                      text: "Item",
-                      isAmount: false,
-                      isTarget: false,
-                    ),
+              Visibility(
+                visible: !widget.isMoney,
+                child: DonationsTextField(
+                  textController: itemController,
+                  text: "Item",
+                  isAmount: false,
+                  isTarget: false,
+                ),
+              ),
               DonationsTextField(
                 textController: amountController,
                 text: widget.isMoney ? "Amount:" : "Value",
                 isAmount: true,
+                isTarget: false,
+              ),
+              DonationsTextField(
+                textController: notesController,
+                text: "Additional Notes",
+                isAmount: false,
                 isTarget: false,
               ),
               Row(
@@ -310,7 +315,7 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
               setState(() {
                 errorText = "";
               });
-            } catch (FormatException) {
+            } catch (err) {
               setState(() {
                 errorText = "Please enter an appropriate amount";
               });

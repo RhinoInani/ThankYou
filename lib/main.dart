@@ -72,6 +72,7 @@ class _HolderState extends State<Holder> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: PageView(
         controller: _pageController,
         pageSnapping: true,
@@ -92,7 +93,10 @@ class _HolderState extends State<Holder> {
       ),
       bottomNavigationBar: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: size.height * 0.07, vertical: size.height * 0.02),
+          horizontal: size.height * 0.07,
+          vertical: size.height * 0.02,
+        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
         child: BottomBar(
           itemPadding: EdgeInsets.all(size.height * 0.01),
           selectedIndex: currentPage,

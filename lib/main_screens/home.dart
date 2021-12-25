@@ -144,7 +144,6 @@ class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
-    var userValues = Hive.box('userValues');
     final appBarSize = expandedHeight - shrinkOffset;
     final cardTopPosition = expandedHeight / 2 - shrinkOffset;
     final proportion = 2 - (expandedHeight / appBarSize);
@@ -187,20 +186,18 @@ class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  elevation: 20.0,
+                  elevation: 10.0,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       UnboldBoldText(
-                        size: size,
                         unbold: "Target Amount: ",
                         bold: "\$${target.toStringAsFixed(2)}",
                         color: kBlackColor,
                       ),
                       UnboldBoldText(
-                        size: size,
                         unbold: "Amount Donated: ",
                         bold: "\$${donated.toStringAsFixed(2)}",
                         //.toStringAsFixed makes it so that the values are rounded to two decimals places
@@ -211,7 +208,6 @@ class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
                         height: 1,
                       ),
                       UnboldBoldText(
-                        size: size,
                         unbold: "Remainder Balance: ",
                         bold: "\$${remainder.toStringAsFixed(2)}",
                         color:

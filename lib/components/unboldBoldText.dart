@@ -5,19 +5,18 @@ import '../userValues.dart';
 class UnboldBoldText extends StatelessWidget {
   const UnboldBoldText({
     Key? key,
-    required this.size,
     required this.unbold,
     required this.bold,
     required this.color,
   }) : super(key: key);
 
-  final Size size;
   final String unbold;
   final String bold;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Padding(
         padding: EdgeInsets.all(size.height * 0.01),
         child: Row(

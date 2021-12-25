@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 
 part 'userValues.g.dart';
 
+//CONSTANTS DO NOT EDIT
 const kBlackColor = Color(0xFF393939);
 const kLightBlackColor = Color(0xFF8F8F8F);
 const mainGreen = Color.fromRGBO(193, 225, 193, 1);
@@ -14,6 +15,7 @@ double target = 0.00;
 double remainder = 0.00;
 double donated = 0.00;
 bool firstTime = true;
+bool goalsSet = false;
 
 //function to set the donations to the value donated and also set the remainder balance to the proper locations
 Future<void> setDonations() async {
@@ -45,6 +47,9 @@ class Item extends HiveObject {
   @HiveField(5)
   String? uuid;
 
+  @HiveField(6)
+  String? notes;
+
   Item(
     this.recipient,
     this.item,
@@ -52,5 +57,6 @@ class Item extends HiveObject {
     this.date,
     this.isMoney,
     this.uuid,
+    this.notes,
   );
 }

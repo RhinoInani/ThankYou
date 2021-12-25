@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:thank_you/components/buildMethods.dart';
 import 'package:thank_you/userValues.dart';
 
 class TablesScreen extends StatefulWidget {
@@ -74,7 +75,6 @@ class _TablesScreenState extends State<TablesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: SafeArea(
@@ -100,7 +100,7 @@ class _TablesScreenState extends State<TablesScreen> {
                     ),
                     DataCell(
                       Text(
-                        "${DateFormat.yMd().format(item.date!)}",
+                        dateFormat(item.date!),
                       ),
                     ),
                   ],

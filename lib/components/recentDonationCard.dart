@@ -18,7 +18,7 @@ class RecentDonationsCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 700),
+            transitionDuration: Duration(milliseconds: 500),
             pageBuilder: (BuildContext context, Animation<double> animation,
                 Animation<double> secondaryAnimation) {
               return DonationDetails(item: item);
@@ -49,7 +49,7 @@ class RecentDonationsCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned(
-                    left: size.width * 0.5,
+                    right: 0,
                     child: Container(
                       child: Text(
                         "${DateFormat.yMd().format(item.date!)}",
@@ -82,30 +82,52 @@ class RecentDonationsCard extends StatelessWidget {
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: Container(
-                width: size.width * 0.55,
-                child: Text(
-                  "\$${item.amount!.toStringAsFixed(2)}",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: size.height * 0.025,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                      child: Container(
+                        width: size.width * 0.55,
+                        child: Text(
+                          "\$${item.amount!.toStringAsFixed(2)}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: size.height * 0.025,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Visibility(
+                        visible: !item.isMoney!,
+                        child: Text(
+                          item.item!,
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                          ),
+                          softWrap: true,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Visibility(
+                  visible: item.notes!.length >= 1,
+                  child: Icon(
+                    Icons.sticky_note_2_outlined,
+                    color: kBlackColor,
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: !item.isMoney!
-                  ? Text(
-                      item.item!,
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                      ),
-                      softWrap: true,
-                    )
-                  : Container(),
+                // Visibility(
+                //   visible: item.notes!.length >= 1,
+                //   child: Icon(Icons.camera_alt_outlined),
+                // ),
+              ],
             ),
           ],
         ),
