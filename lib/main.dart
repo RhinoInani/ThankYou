@@ -42,6 +42,9 @@ class MyApp extends StatelessWidget {
             color: kBlackColor,
             opacity: 0.9,
           ),
+          titleTextStyle: TextStyle(
+            color: kBlackColor,
+          ),
         ),
         dividerTheme: DividerThemeData(
           color: kLightBlackColor,

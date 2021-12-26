@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
+import 'components/buildMethods.dart';
 import 'userValues.dart';
 
 class NewDonationsScreen extends StatefulWidget {
@@ -295,8 +298,7 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
             widget.isAmount
                 ? setState(() {
                     widget.textController.text = NumberFormat.simpleCurrency(
-                      locale: 'en',
-                      name: '',
+                      locale: Platform.localeName.toString(),
                       decimalDigits: 2,
                     ).format((double.parse(replacedString.trim())));
                     if (widget.isTarget) {
@@ -308,7 +310,8 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
           },
           onChanged: (string) {
             try {
-              NumberFormat f = new NumberFormat("#,##0.00", "en_US");
+              NumberFormat f = new NumberFormat(
+                  "#,##0.00", "${Platform.localeName.toString()}");
               string = widget.isAmount
                   ? f.format(f.parse(string.replaceAll(',', '')))
                   : string;

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
+import 'package:thank_you/components/buildMethods.dart';
+import 'package:thank_you/introduction/intro.dart';
+import 'package:thank_you/newDonation.dart';
 import 'package:thank_you/userValues.dart';
 
 List<String> headers = [
   "Edit Goals",
   "Edit Currency",
-  "Default Page",
   "Our Mission",
   "Privacy Policy",
   "Other Apps",
@@ -15,21 +18,19 @@ List<String> headers = [
 List<IconData> icons = [
   Icons.edit_outlined,
   Icons.public_outlined,
-  Icons.filter,
   Icons.favorite_outline,
   Icons.lock_outlined,
   Icons.now_widgets_outlined,
   Icons.info_outlined,
 ];
 
-List<VoidCallback> callback = [
-  () {},
-  () {},
-  () {},
-  () {},
-  () {},
-  () {},
-  () {},
+List<Widget> callback = [
+  EditGoals(),
+  Introduction(),
+  Introduction(),
+  Introduction(),
+  Introduction(),
+  Introduction(),
 ];
 
 class SettingsScreen extends StatefulWidget {
@@ -110,7 +111,14 @@ class SettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: callback[index],
+      onTap: () {
+        Navigator.of(context).push(PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            pageBuilder: (BuildContext context, Animation<double> animation,
+                Animation<double> secondaryAnimation) {
+              return callback[index];
+            }));
+      },
       child: Container(
         padding: EdgeInsets.symmetric(
           vertical: size.height * 0.03,
@@ -118,11 +126,17 @@ class SettingsCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(
-              icons[index],
-              color: index % 2 == 0
-                  ? Color.fromRGBO(158, 193, 158, 1.0)
-                  : Color(0xff97d6e5),
+            Hero(
+              tag: index,
+              child: Material(
+                type: MaterialType.transparency,
+                child: Icon(
+                  icons[index],
+                  color: index % 2 == 0
+                      ? Color.fromRGBO(158, 193, 158, 1.0)
+                      : Color(0xff97d6e5),
+                ),
+              ),
             ),
             SizedBox(
               width: size.width * 0.05,
@@ -139,6 +153,77 @@ class SettingsCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class EditGoals extends StatefulWidget {
+  const EditGoals({Key? key}) : super(key: key);
+
+  @override
+  State<EditGoals> createState() => _EditGoalsState();
+}
+
+class _EditGoalsState extends State<EditGoals> {
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    TextEditingController controller = TextEditingController();
+    Box userValues = Hive.box('userValues');
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Edit You Goals",
+          style: TextStyle(fontSize: size.height * 0.025),
+        ),
+        leading: Hero(
+          tag: 0,
+          child: Material(
+            type: MaterialType.transparency,
+            child: IconButton(
+              onPressed: () {
+                setState(() {});
+                Navigator.of(context).pop();
+              },
+              icon: Icon(
+                Icons.edit_outlined,
+                color: Color.fromRGBO(158, 193, 158, 1.0),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DonationsTextField(
+              textController: controller,
+              isAmount: true,
+              text: 'Set a Target Amount',
+              isTarget: true,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              setState(() {
+                target =
+                    double.parse(controller.value.text.replaceAll(',', ''));
+                remainder = target - donated;
+              });
+              await setDonations();
+              await userValues.put('target', target);
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              "Change Goals",
+              style: TextStyle(color: kBlackColor),
+            ),
+            style: setButtonStyle(),
+          )
+        ],
       ),
     );
   }

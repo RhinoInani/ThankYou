@@ -38,7 +38,7 @@ class DonationDetails extends StatelessWidget {
             ),
             DetailsColumn(
               title: 'Type:',
-              description: item.isMoney! ? 'Money' : 'Item(s)',
+              description: item.isMoney! ? 'Money' : 'Items',
             ),
             DetailsColumn(
               title: 'Date:',

@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 
 part 'userValues.g.dart';
 
@@ -17,12 +19,9 @@ double donated = 0.00;
 bool firstTime = true;
 bool goalsSet = false;
 
-//function to set the donations to the value donated and also set the remainder balance to the proper locations
-Future<void> setDonations() async {
-  Box userValues = Hive.box('userValues');
-  remainder = target - donated;
-  await userValues.put('donated', donated);
-}
+var moneyFormat =
+    NumberFormat.simpleCurrency(locale: Platform.localeName.toString());
+String currency = "${moneyFormat.currencySymbol}";
 
 ///DO NOT ALTER CODE UNDER THIS LINE
 ///if you do run: flutter packages pub run build_runner build
