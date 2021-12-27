@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -24,5 +26,5 @@ ButtonStyle setButtonStyle() {
 }
 
 String dateFormat(DateTime date) {
-  return "${DateFormat.yMd().format(date)}";
+  return "${DateFormat.yMd(Platform.localeName).format(date)}";
 }

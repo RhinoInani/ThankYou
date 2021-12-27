@@ -49,6 +49,9 @@ class Item extends HiveObject {
   @HiveField(6)
   String? notes;
 
+  @HiveField(7)
+  String? imagePath;
+
   Item(
     this.recipient,
     this.item,
@@ -57,5 +60,6 @@ class Item extends HiveObject {
     this.isMoney,
     this.uuid,
     this.notes,
+    this.imagePath,
   );
 }

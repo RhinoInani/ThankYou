@@ -20,6 +20,8 @@ dependencies:
   path_provider: ^2.0.8
   introduction_screen: ^2.1.0
   image_picker: ^0.8.4+4
+  permission_handler: ^8.3.0
+  path: ^1.8.0
 
 dev_dependencies:
   flutter_test:
@@ -31,3 +33,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+  fonts:
+      - family: CustomIcon
+        fonts:
+        - asset: assets/CustomIcon.ttf

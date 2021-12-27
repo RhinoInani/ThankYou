@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:thank_you/components/buildMethods.dart';
+import 'package:thank_you/components/donationsTextField.dart';
 import 'package:thank_you/introduction/intro.dart';
-import 'package:thank_you/newDonation.dart';
 import 'package:thank_you/userValues.dart';
 
 List<String> headers = [

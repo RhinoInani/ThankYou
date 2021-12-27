@@ -3,10 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:thank_you/components/custom_icon_icons.dart';
 
-import 'components/buildMethods.dart';
-import 'userValues.dart';
+import '../components/buildMethods.dart';
+import '../components/donationsTextField.dart';
+import '../userValues.dart';
 
 class NewDonationsScreen extends StatefulWidget {
   NewDonationsScreen({Key? key, required this.isMoney}) : super(key: key);
@@ -17,6 +23,9 @@ class NewDonationsScreen extends StatefulWidget {
 }
 
 class _NewDonationsScreenState extends State<NewDonationsScreen> {
+  File? _image;
+  bool imagePicked = false;
+
   DateTime? picked = DateTime.now();
 
   TextEditingController recipientController = TextEditingController();
@@ -24,34 +33,10 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   TextEditingController itemController = TextEditingController();
   TextEditingController notesController = TextEditingController();
 
-  var donations = Hive.box('donations');
+  var donations = Hive.box<Item>('donations');
   var userValues = Hive.box('userValues');
 
-  Future<void> setHive() async {
-    String id = userValues.get('donationsCount', defaultValue: '0').toString();
-    donations.put(
-      id,
-      Item(
-        "${recipientController.value.text.trim()}",
-        itemController.value.text.trim(),
-        double.parse(amountController.value.text.replaceAll(',', '')),
-        picked == null ? DateTime.now() : picked,
-        widget.isMoney,
-        id,
-        '''${notesController.value.text.trim()}''',
-      ),
-    );
-
-    double currentDonated = userValues.get('donated', defaultValue: 0.00);
-    donated = currentDonated +
-        double.parse(amountController.value.text.replaceAll(',', ''));
-    await setDonations();
-    int donationsCount = int.parse(id) + 1;
-    userValues.put('donationsCount', donationsCount.toString());
-    recipientController.clear();
-    amountController.clear();
-    picked = DateTime.now();
-  }
+  final _imagePicker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +126,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "${DateFormat.yMMMMd('en_US').format(picked ??= DateTime.now())}",
+                            "${DateFormat.yMMMMd(Platform.localeName.toString()).format(picked ??= DateTime.now())}",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                               color: Colors.black,
@@ -150,6 +135,49 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                         ],
                       ),
                     ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      await pickImage();
+                    },
+                    icon: Icon(CustomIcon.gallery_svgrepo_com),
+                    style: outlinedButtonStyle(size),
+                    label: Text("Gallery"),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      await takeImage();
+                    },
+                    icon: Icon(CustomIcon.camera_svgrepo_com),
+                    label: Text("Camera"),
+                    style: outlinedButtonStyle(size),
+                  ),
+                  Visibility(
+                    child: imagePicked
+                        ? GestureDetector(
+                            onTap: () {
+                              fullSizeImage(size, context);
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                _image!,
+                                fit: BoxFit.fill,
+                                height: size.width * 0.2,
+                                width: size.width * 0.2,
+                              ),
+                            ),
+                          )
+                        : Container(),
+                    visible: imagePicked,
                   ),
                 ],
               ),
@@ -184,10 +212,120 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                   },
                 ),
               ),
+              SizedBox(
+                height: size.height * 0.1,
+              ),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> takeImage() async {
+    var status = await Permission.camera.status;
+    if (status.isDenied) {
+      Permission.camera.request();
+    }
+    final XFile? image =
+        await _imagePicker.pickImage(source: ImageSource.camera);
+    if (image == null) return;
+
+    // final finalImage = await savePermanentImage(image.path);///TODO: move this to on confirm / set hive statement
+    setState(() {
+      _image = File(image.path);
+      imagePicked = true;
+    });
+  }
+
+  Future<void> pickImage() async {
+    var status = await Permission.photos.status;
+    if (status.isDenied) {
+      Permission.photos.request();
+    }
+    final XFile? image =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+
+    // final finalImage = await savePermanentImage(image.path);
+    setState(() {
+      _image = File(image.path);
+      imagePicked = true;
+    });
+  }
+
+  Future<File> savePermanentImage(String imagePath) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final name = basename(imagePath);
+    final File image = File('${directory.path}/$name');
+
+    return File(imagePath).copy(image.path);
+  }
+
+  Future<void> setHive() async {
+    String id = userValues.get('donationsCount', defaultValue: '0').toString();
+    String finalImage = "";
+    if (_image != null) {
+      final finalFile = await savePermanentImage(_image!.path);
+      finalImage = finalFile.path;
+    }
+    var format = NumberFormat.simpleCurrency(locale: Platform.localeName);
+    donations.put(
+      id,
+      Item(
+        "${recipientController.value.text.trim()}",
+        itemController.value.text.trim(),
+        double.parse(amountController.value.text
+            .replaceAll(',', '')
+            .replaceAll('${format.currencySymbol}', '')),
+        picked == null ? DateTime.now() : picked,
+        widget.isMoney,
+        id,
+        '''${notesController.value.text.trim()}''',
+        finalImage,
+      ),
+    );
+
+    double currentDonated = userValues.get('donated', defaultValue: 0.00);
+    donated = currentDonated +
+        double.parse(amountController.value.text.replaceAll(',', ''));
+    await setDonations();
+    int donationsCount = int.parse(id) + 1;
+    userValues.put('donationsCount', donationsCount.toString());
+    recipientController.clear();
+    amountController.clear();
+    picked = DateTime.now();
+  }
+
+  ButtonStyle outlinedButtonStyle(Size size) {
+    return OutlinedButton.styleFrom(
+      primary: kBlackColor,
+      maximumSize: Size(size.width * 0.4, size.height * 0.06),
+      minimumSize: Size(size.width * 0.2, size.height * 0.06),
+    );
+  }
+
+  void fullSizeImage(Size size, context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(size.width * 0.05),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(
+                    _image!,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -215,120 +353,6 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
           child: child!,
         );
       },
-    );
-  }
-}
-
-class DonationsTextField extends StatefulWidget {
-  DonationsTextField(
-      {Key? key,
-      required this.textController,
-      required this.text,
-      required this.isAmount,
-      required this.isTarget})
-      : super(key: key);
-
-  final TextEditingController textController;
-  final String text;
-  final bool isAmount;
-  final bool isTarget;
-
-  static const locale = 'en';
-
-  @override
-  _DonationsTextFieldState createState() => _DonationsTextFieldState();
-}
-
-class _DonationsTextFieldState extends State<DonationsTextField> {
-  String get _currency =>
-      NumberFormat.compactSimpleCurrency(locale: DonationsTextField.locale)
-          .currencySymbol;
-
-  String errorText = "";
-
-  @override
-  Widget build(BuildContext context) {
-    Box? userValues;
-    if (widget.isTarget) {
-      userValues = Hive.box('userValues');
-    }
-    Size size = MediaQuery.of(context).size;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            "${widget.text}",
-            style: TextStyle(fontSize: size.width * 0.045),
-          ),
-        ),
-        TextField(
-          autofocus: false,
-          decoration: InputDecoration(
-            prefixText: widget.isAmount ? _currency : " ",
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[400]!),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey[400]!),
-            ),
-            errorText: errorText == "" ? null : errorText,
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.red[400]!),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.red[400]!),
-            ),
-          ),
-          keyboardType: widget.isAmount
-              ? TextInputType.numberWithOptions(signed: true, decimal: true)
-              : null,
-          controller: widget.textController,
-          textAlign: TextAlign.center,
-          autocorrect: true,
-          expands: false,
-          onSubmitted: (string) {
-            String replacedString =
-                widget.isAmount ? string.replaceAll(',', '') : string;
-            widget.isAmount
-                ? setState(() {
-                    widget.textController.text = NumberFormat.simpleCurrency(
-                      locale: Platform.localeName.toString(),
-                      decimalDigits: 2,
-                    ).format((double.parse(replacedString.trim())));
-                    if (widget.isTarget) {
-                      userValues!
-                          .put('target', double.parse(replacedString.trim()));
-                    }
-                  })
-                : string = string;
-          },
-          onChanged: (string) {
-            try {
-              NumberFormat f = new NumberFormat(
-                  "#,##0.00", "${Platform.localeName.toString()}");
-              string = widget.isAmount
-                  ? f.format(f.parse(string.replaceAll(',', '')))
-                  : string;
-              setState(() {
-                errorText = "";
-              });
-            } catch (err) {
-              setState(() {
-                errorText = "Please enter an appropriate amount";
-              });
-            }
-          },
-        ),
-        SizedBox(
-          height: size.height * 0.02,
-        ),
-      ],
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:thank_you/userValues.dart';
@@ -58,6 +60,13 @@ class DonationDetails extends StatelessWidget {
                 description: '${item.notes!}',
               ),
             ),
+            Visibility(
+                visible: item.imagePath!.length >= 1,
+                child: DetailsColumn(
+                  description: '',
+                  title: 'Picture of Donation',
+                  imagePath: item.imagePath!,
+                ))
           ],
         ),
       ),
@@ -70,10 +79,12 @@ class DetailsColumn extends StatelessWidget {
     Key? key,
     required this.title,
     required this.description,
+    this.imagePath = "",
   }) : super(key: key);
 
   final String title;
   final String description;
+  final String imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -89,18 +100,33 @@ class DetailsColumn extends StatelessWidget {
             style: TextStyle(fontSize: size.height * constFontSize),
           ),
         ),
-        Container(
-          width: size.width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: kLightBlackColor.withOpacity(0.13),
-          ),
-          padding: EdgeInsets.all(size.height * 0.015),
-          child: Text(
-            "$description",
-            style: TextStyle(fontSize: size.height * constFontSize),
+        Visibility(
+          visible: imagePath.length <= 1,
+          child: Container(
+            width: size.width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: kLightBlackColor.withOpacity(0.13),
+            ),
+            padding: EdgeInsets.all(size.height * 0.015),
+            child: Text(
+              "$description",
+              style: TextStyle(fontSize: size.height * constFontSize),
+            ),
           ),
         ),
+        Visibility(
+          visible: imagePath.length >= 1,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(File(imagePath)),
+              ),
+            ],
+          ),
+        )
       ],
     );
   }

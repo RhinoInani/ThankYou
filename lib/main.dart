@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:thank_you/main_screens//settings.dart';
 import 'package:thank_you/main_screens/home.dart';
 import 'package:thank_you/main_screens/tables.dart';
 import 'package:thank_you/userValues.dart';
 
 import 'introduction/intro.dart';
-import 'newDonation.dart';
+import 'main_screens/newDonation.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -20,7 +21,8 @@ void main() async {
   donated = await userValues.get('donated', defaultValue: 0.00);
   firstTime = await userValues.get('firstTime', defaultValue: true);
   remainder = target - donated;
-  await Hive.openBox('donations');
+  initializeDateFormatting();
+  await Hive.openBox<Item>('donations');
   runApp(MyApp());
 }
 

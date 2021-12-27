@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:thank_you/components/buildMethods.dart';
+import 'package:thank_you/components/donationDetails.dart';
 import 'package:thank_you/userValues.dart';
 
 import '../components/recentDonationCard.dart';
@@ -15,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  var donations = Hive.box('donations');
+  var donations = Hive.box<Item>('donations');
   var userValues = Hive.box('userValues');
 
   @override
@@ -31,13 +34,21 @@ class _HomeScreenState extends State<HomeScreen> {
             expandedHeight: size.height * 0.23,
             floating: false,
             pinned: true,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  showSearch(context: context, delegate: SearchWidget());
+                },
+                icon: Icon(Icons.search),
+              )
+            ],
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Text(
               "Recent Donations",
               style: GoogleFonts.comfortaa(
                 color: Colors.black,
-                fontSize: size.width * 0.065,
+                fontSize: size.width * 0.06,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -45,23 +56,18 @@ class _HomeScreenState extends State<HomeScreen> {
               background: HeaderCard(),
             ),
           ),
-          // SliverPersistentHeader(
-          //   pinned: true,
-          //   floating: false,
-          //   delegate: HeaderSilverDelegate(
-          //     size: size,
-          //     expandedHeight: size.height * 0.2,
-          //   ),
-          // ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int num) {
                 int index = donations.length - num - 1;
-                Item card = donations.getAt(index);
+                Item card = donations.getAt(index)!;
                 return Dismissible(
                   key: Key(card.date.toString()),
                   onDismissed: (direction) async {
                     // await confirmDelete(size, card);
+                    if (card.imagePath!.isNotEmpty) {
+                      await File(card.imagePath!).delete();
+                    }
                     await donations.delete(card.uuid);
                     setState(() {
                       donated -= card.amount!;
@@ -203,109 +209,97 @@ class HeaderCard extends StatelessWidget {
   }
 }
 
-///SLIVER APP DELEGATE
-// class HeaderSilverDelegate extends SliverPersistentHeaderDelegate {
-//   final double expandedHeight;
-//   final Size size;
-//   final bool hideTitleWhenExpanded;
-//
-//   HeaderSilverDelegate({
-//     required this.expandedHeight,
-//     required this.size,
-//     this.hideTitleWhenExpanded = true,
-//   });
-//
-//   @override
-//   Widget build(
-//       BuildContext context, double shrinkOffset, bool overlapsContent) {
-//     final appBarSize = expandedHeight - shrinkOffset;
-//     final cardTopPosition = expandedHeight / 2 - shrinkOffset;
-//     final proportion = 2 - (expandedHeight / appBarSize);
-//     final percent = proportion < 0 || proportion > 1 ? 0.0 : proportion;
-//     return SizedBox(
-//       height: expandedHeight + expandedHeight / 2,
-//       child: Stack(
-//         children: [
-//           SizedBox(
-//             height: appBarSize < kToolbarHeight
-//                 ? kToolbarHeight + 30
-//                 : appBarSize + 30,
-//             child: AppBar(
-//               backgroundColor: Colors.transparent,
-//               elevation: 0.0,
-//               centerTitle: true,
-//               title: Opacity(
-//                 opacity: hideTitleWhenExpanded ? 1.0 - percent : 1.0,
-//                 child: Text(
-//                   "Recent Donations",
-//                   style: GoogleFonts.comfortaa(
-//                     color: Colors.black,
-//                     fontSize: size.width * 0.065,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//           Positioned(
-//             left: 0.0,
-//             right: 0.0,
-//             top: cardTopPosition > 0 ? cardTopPosition : 0,
-//             bottom: 0.0,
-//             child: Opacity(
-//               opacity: percent,
-//               child: Container(
-//                 padding: EdgeInsets.symmetric(horizontal: 30 * percent),
-//                 child: Card(
-//                   shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(15),
-//                   ),
-//                   elevation: 10.0,
-//                   child: Column(
-//                     mainAxisSize: MainAxisSize.min,
-//                     crossAxisAlignment: CrossAxisAlignment.center,
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       UnboldBoldText(
-//                         unbold: "Target Amount: ",
-//                         bold: "\$${target.toStringAsFixed(2)}",
-//                         color: kBlackColor,
-//                       ),
-//                       UnboldBoldText(
-//                         unbold: "Amount Donated: ",
-//                         bold: "\$${donated.toStringAsFixed(2)}",
-//                         //.toStringAsFixed makes it so that the values are rounded to two decimals places
-//                         //use throughout code !
-//                         color: kBlackColor,
-//                       ),
-//                       Divider(
-//                         height: 1,
-//                       ),
-//                       UnboldBoldText(
-//                         unbold: "Remainder Balance: ",
-//                         bold: "\$${remainder.toStringAsFixed(2)}",
-//                         color:
-//                             donated >= target ? Colors.lightGreen : kBlackColor,
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   @override
-//   double get maxExtent => expandedHeight + expandedHeight / 2;
-//
-//   @override
-//   double get minExtent => size.height * 0.03;
-//
-//   @override
-//   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-//     return true;
-//   }
-// }
+class SearchWidget extends SearchDelegate {
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.chevron_left_rounded),
+      onPressed: () {
+        close(context, null); // for closing the search page and going back
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return SearchFinder(query: query);
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return SearchFinder(query: query);
+  }
+}
+
+class SearchFinder extends StatelessWidget {
+  final String query;
+
+  const SearchFinder({Key? key, required this.query}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    // var databaseProvider = Provider.of(context);
+    return ValueListenableBuilder(
+      valueListenable: Hive.box<Item>('donations').listenable(),
+      builder: (context, Box<Item> donationsBox, _) {
+        ///* this is where we filter data
+        var results = query.isEmpty
+            ? donationsBox.values.toList() // whole list
+            : donationsBox.values
+                .where((c) =>
+                    c.recipient!.toLowerCase().contains(query) ||
+                    dateFormat(c.date!).contains(query))
+                .toList();
+
+        return results.isEmpty
+            ? Center(
+                child: Text(
+                  'No results found!',
+                ),
+              )
+            : ListView.builder(
+                physics: BouncingScrollPhysics(),
+                itemCount: results.length,
+                itemBuilder: (context, index) {
+                  // passing as a custom list
+                  final Item donationListItem = results[index];
+
+                  return ListTile(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  DonationDetails(item: donationListItem)));
+                    },
+                    title: Text(
+                      donationListItem.recipient!,
+                    ),
+                    subtitle: Text(
+                      donationListItem.amount!.toString(),
+                      textScaleFactor: 1.0,
+                    ),
+                    trailing: Text(
+                      dateFormat(donationListItem.date!),
+                    ),
+                    leading: donationListItem.isMoney!
+                        ? Icon(Icons.attach_money_rounded)
+                        : Icon(Icons.shopping_bag_outlined),
+                  );
+                },
+              );
+      },
+    );
+  }
+}

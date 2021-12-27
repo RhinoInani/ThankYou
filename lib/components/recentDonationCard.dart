@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:thank_you/components/buildMethods.dart';
+import 'package:thank_you/components/custom_icon_icons.dart';
 import 'package:thank_you/userValues.dart';
 
-import '../donationDetails.dart';
+import 'donationDetails.dart';
 
 class RecentDonationsCard extends StatelessWidget {
   const RecentDonationsCard({
@@ -14,6 +18,7 @@ class RecentDonationsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    var format = NumberFormat.simpleCurrency(locale: Platform.localeName);
 
     return GestureDetector(
       onTap: () {
@@ -52,7 +57,7 @@ class RecentDonationsCard extends StatelessWidget {
                     right: 0,
                     child: Container(
                       child: Text(
-                        "${DateFormat.yMd().format(item.date!)}",
+                        "${dateFormat(item.date!)}",
                         style: TextStyle(
                           fontSize: size.height * 0.02,
                         ),
@@ -93,7 +98,7 @@ class RecentDonationsCard extends StatelessWidget {
                       child: Container(
                         width: size.width * 0.55,
                         child: Text(
-                          "\$${item.amount!.toStringAsFixed(2)}",
+                          "${format.currencySymbol}${item.amount!.toStringAsFixed(2)}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: size.height * 0.025,
@@ -117,16 +122,20 @@ class RecentDonationsCard extends StatelessWidget {
                   ],
                 ),
                 Visibility(
-                  visible: item.notes!.length >= 1,
-                  child: Icon(
-                    Icons.sticky_note_2_outlined,
-                    color: kBlackColor,
-                  ),
+                    visible: item.notes!.length >= 1,
+                    child: Icon(
+                      CustomIcon.notes_notepad_svgrepo_com,
+                    )),
+                Visibility(
+                  maintainInteractivity: false,
+                  maintainSize: false,
+                  visible: item.imagePath!.length >= 1,
+                  child: item.imagePath!.length >= 1
+                      ? Icon(
+                          CustomIcon.camera_svgrepo_com,
+                        )
+                      : SizedBox.shrink(),
                 ),
-                // Visibility(
-                //   visible: item.notes!.length >= 1,
-                //   child: Icon(Icons.camera_alt_outlined),
-                // ),
               ],
             ),
           ],
