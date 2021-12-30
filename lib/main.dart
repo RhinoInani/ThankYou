@@ -1,5 +1,6 @@
 import 'package:bottom_bar/bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -30,6 +31,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsFlutterBinding.ensureInitialized();
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.black,
+      statusBarColor: Colors.black,
+    ));
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.portraitUp,
+    ]);
     return MaterialApp(
       initialRoute: '/',
       routes: {
@@ -40,6 +49,9 @@ class MyApp extends StatelessWidget {
         appBarTheme: AppBarTheme(
           elevation: 0,
           backgroundColor: Colors.transparent,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.black,
+          ),
           iconTheme: IconThemeData(
             color: kBlackColor,
             opacity: 0.9,

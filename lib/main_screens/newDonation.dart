@@ -25,9 +25,9 @@ class NewDonationsScreen extends StatefulWidget {
 class _NewDonationsScreenState extends State<NewDonationsScreen> {
   File? _image;
   bool imagePicked = false;
+  final _imagePicker = ImagePicker();
 
   DateTime? picked = DateTime.now();
-
   TextEditingController recipientController = TextEditingController();
   TextEditingController amountController = TextEditingController();
   TextEditingController itemController = TextEditingController();
@@ -36,7 +36,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   var donations = Hive.box<Item>('donations');
   var userValues = Hive.box('userValues');
 
-  final _imagePicker = ImagePicker();
+  bool error = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +71,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
               ),
               DonationsTextField(
                 textController: recipientController,
-                text: "Recipient",
+                text: "Recipient *",
                 isAmount: false,
                 isTarget: false,
               ),
@@ -79,14 +79,14 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                 visible: !widget.isMoney,
                 child: DonationsTextField(
                   textController: itemController,
-                  text: "Item",
+                  text: "Item *",
                   isAmount: false,
                   isTarget: false,
                 ),
               ),
               DonationsTextField(
                 textController: amountController,
-                text: widget.isMoney ? "Amount:" : "Value",
+                text: widget.isMoney ? "Amount *" : "Value *",
                 isAmount: true,
                 isTarget: false,
               ),
@@ -102,7 +102,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                   Padding(
                     padding: EdgeInsets.only(top: 8.0, bottom: 8.0, right: 8.0),
                     child: Text(
-                      "Date:",
+                      "Date *",
                       style: TextStyle(fontSize: size.width * 0.045),
                     ),
                   ),
@@ -137,6 +137,14 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                     ),
                   ),
                 ],
+              ),
+              SizedBox(
+                height: size.height * 0.02,
+              ),
+              Text(
+                "Donation Image",
+                style:
+                    TextStyle(color: kBlackColor, fontSize: size.width * 0.045),
               ),
               SizedBox(
                 height: size.height * 0.02,
@@ -181,36 +189,60 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: size.height * 0.05,
+              Visibility(
+                visible: !error,
+                child: SizedBox(
+                  height: size.height * 0.05,
+                ),
+              ),
+              Visibility(
+                visible: error,
+                child: Padding(
+                  padding: EdgeInsets.all(size.height * 0.02),
+                  child: Center(
+                    child: Text(
+                      "Missing one or more fields",
+                      style: TextStyle(
+                          color: Colors.red[600],
+                          fontSize: size.height * 0.015),
+                    ),
+                  ),
+                ),
               ),
               Center(
                 child: GestureDetector(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Colors.grey[400]!,
-                        width: 0.7,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.grey[400]!,
+                          width: 0.7,
+                        ),
+                      ),
+                      width: size.width * 0.85,
+                      height: size.height * 0.07,
+                      child: Center(
+                        child: Text(
+                          "Confirm",
+                          style: TextStyle(fontSize: size.width * 0.045),
+                        ),
                       ),
                     ),
-                    width: size.width * 0.85,
-                    height: size.height * 0.07,
-                    child: Center(
-                      child: Text(
-                        "Confirm",
-                        style: TextStyle(fontSize: size.width * 0.045),
-                      ),
-                    ),
-                  ),
-                  onTap: () async {
-                    setState(() {
-                      setHive();
-                    });
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/home', (Route<dynamic> route) => false);
-                  },
-                ),
+                    onTap: () async {
+                      if (recipientController.value.text.isEmpty ||
+                          amountController.value.text.isEmpty ||
+                          (!widget.isMoney &&
+                              itemController.value.text.isEmpty)) {
+                        setState(() {
+                          error = true;
+                        });
+                      } else {
+                        setHive();
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/home', (Route<dynamic> route) => false);
+                        setState(() {});
+                      }
+                    }),
               ),
               SizedBox(
                 height: size.height * 0.1,
@@ -227,11 +259,12 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
     if (status.isDenied) {
       Permission.camera.request();
     }
-    final XFile? image =
-        await _imagePicker.pickImage(source: ImageSource.camera);
+    final XFile? image = await _imagePicker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 75,
+    );
     if (image == null) return;
 
-    // final finalImage = await savePermanentImage(image.path);///TODO: move this to on confirm / set hive statement
     setState(() {
       _image = File(image.path);
       imagePicked = true;
@@ -243,8 +276,10 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
     if (status.isDenied) {
       Permission.photos.request();
     }
-    final XFile? image =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 75,
+    );
     if (image == null) return;
 
     // final finalImage = await savePermanentImage(image.path);
@@ -267,7 +302,8 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
     String finalImage = "";
     if (_image != null) {
       final finalFile = await savePermanentImage(_image!.path);
-      finalImage = finalFile.path;
+      finalImage = await finalFile.path;
+      Future.delayed(Duration(milliseconds: 3));
     }
     var format = NumberFormat.simpleCurrency(locale: Platform.localeName);
     donations.put(
@@ -288,13 +324,16 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
 
     double currentDonated = userValues.get('donated', defaultValue: 0.00);
     donated = currentDonated +
-        double.parse(amountController.value.text.replaceAll(',', ''));
+        double.parse(amountController.value.text
+            .replaceAll(',', '')
+            .replaceAll('${format.currencySymbol}', ''));
     await setDonations();
     int donationsCount = int.parse(id) + 1;
     userValues.put('donationsCount', donationsCount.toString());
     recipientController.clear();
     amountController.clear();
     picked = DateTime.now();
+    setState(() {});
   }
 
   ButtonStyle outlinedButtonStyle(Size size) {

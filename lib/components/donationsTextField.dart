@@ -69,11 +69,17 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
               borderSide: BorderSide(color: Colors.red[400]!),
             ),
           ),
-          keyboardType: widget.isAmount ? TextInputType.number : null,
+          keyboardType: widget.isAmount
+              ? TextInputType.numberWithOptions(
+                  decimal: true,
+                )
+              : null,
+          textInputAction: widget.isAmount ? TextInputAction.done : null,
           controller: widget.textController,
           textAlign: TextAlign.center,
           autocorrect: true,
           expands: false,
+          textCapitalization: TextCapitalization.sentences,
           onSubmitted: (string) {
             String replacedString =
                 widget.isAmount ? string.replaceAll(',', '') : string;

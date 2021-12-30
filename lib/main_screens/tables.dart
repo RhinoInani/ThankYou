@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:thank_you/components/buildMethods.dart';
+import 'package:thank_you/main_screens/donationDetails.dart';
+import 'package:thank_you/main_screens/searchWidgets.dart';
 import 'package:thank_you/userValues.dart';
 
 class TablesScreen extends StatefulWidget {
@@ -13,9 +15,8 @@ class TablesScreen extends StatefulWidget {
 }
 
 class _TablesScreenState extends State<TablesScreen> {
-  var box = Hive.box('donations');
+  var box = Hive.box<Item>('donations');
 
-  late List<DataRow> tableData;
   final List<String> recipient = [];
   final List<double> amount = [];
   final List<String> date = [];
@@ -31,52 +32,29 @@ class _TablesScreenState extends State<TablesScreen> {
   @override
   void initState() {
     box.toMap().forEach((key, value) {
-      items.add(box.get(key));
+      items.add(box.get(key)!);
     });
-    generateTableData(true);
     super.initState();
-  }
-
-  void generateTableData(bool init) {
-    tableData = List.generate(box.length, (index) {
-      Item item = box.getAt(index);
-      if (init) {
-        recipient.add(item.recipient!);
-        amount.add(item.amount!);
-        date.add("${DateFormat.yMd().format(item.date!)}");
-      }
-      return DataRow(
-        cells: [
-          DataCell(
-            Text(
-              recipient[index],
-            ),
-          ),
-          DataCell(
-            Text(
-              amount[index].toString(),
-            ),
-          ),
-          DataCell(
-            Text(
-              date[index],
-            ),
-          ),
-        ],
-        color: MaterialStateProperty.resolveWith(
-          (Set states) {
-            if (item.isMoney!) return mainGreen;
-            return mainBlue;
-          },
-        ),
-      );
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        toolbarHeight: 30,
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.black,
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              showSearch(context: context, delegate: SearchWidget());
+            },
+            icon: Icon(Icons.search),
+          )
+        ],
+      ),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -85,8 +63,17 @@ class _TablesScreenState extends State<TablesScreen> {
             DataTable(
               sortAscending: isAscending,
               sortColumnIndex: sortColumnIndex,
+              showCheckboxColumn: false,
               rows: items.map((item) {
                 return DataRow(
+                  onSelectChanged: (bool? selected) {
+                    if (selected!) {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return DonationDetails(item: item);
+                      }));
+                    }
+                  },
                   cells: [
                     DataCell(
                       Text(

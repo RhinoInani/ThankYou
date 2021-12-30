@@ -6,7 +6,7 @@ import 'package:thank_you/components/buildMethods.dart';
 import 'package:thank_you/components/custom_icon_icons.dart';
 import 'package:thank_you/userValues.dart';
 
-import 'donationDetails.dart';
+import '../main_screens/donationDetails.dart';
 
 class RecentDonationsCard extends StatelessWidget {
   const RecentDonationsCard({

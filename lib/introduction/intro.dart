@@ -61,6 +61,7 @@ class _IntroductionState extends State<Introduction> {
         onDone: () async {
           if (goalsSet) {
             await userValues.put('firstTime', false);
+            await userValues.put('year', DateTime.now().year.toString());
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (BuildContext context) {
               return Holder();
