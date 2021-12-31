@@ -48,7 +48,6 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
           ),
         ),
         TextField(
-          autofocus: false,
           decoration: InputDecoration(
             prefixText: widget.isAmount ? _currency : " ",
             enabledBorder: OutlineInputBorder(
@@ -98,8 +97,7 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
           },
           onChanged: (string) {
             try {
-              NumberFormat f = new NumberFormat(
-                  "#,##0.00", "${Platform.localeName.toString()}");
+              NumberFormat f = new NumberFormat("#,##0.00");
               string = widget.isAmount
                   ? f.format(f.parse(string.replaceAll(',', '')))
                   : string;

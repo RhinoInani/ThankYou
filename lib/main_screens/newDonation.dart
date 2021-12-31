@@ -305,7 +305,6 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
       finalImage = await finalFile.path;
       Future.delayed(Duration(milliseconds: 3));
     }
-    var format = NumberFormat.simpleCurrency(locale: Platform.localeName);
     donations.put(
       id,
       Item(
@@ -313,7 +312,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
         itemController.value.text.trim(),
         double.parse(amountController.value.text
             .replaceAll(',', '')
-            .replaceAll('${format.currencySymbol}', '')),
+            .replaceAll('$currency', '')),
         picked == null ? DateTime.now() : picked,
         widget.isMoney,
         id,
@@ -326,7 +325,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
     donated = currentDonated +
         double.parse(amountController.value.text
             .replaceAll(',', '')
-            .replaceAll('${format.currencySymbol}', ''));
+            .replaceAll('$currency', ''));
     await setDonations();
     int donationsCount = int.parse(id) + 1;
     userValues.put('donationsCount', donationsCount.toString());

@@ -3,13 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:thank_you/components/buildMethods.dart';
 import 'package:thank_you/components/donationsTextField.dart';
-import 'package:thank_you/introduction/intro.dart';
 import 'package:thank_you/userValues.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 List<String> headers = [
   "Edit Goals",
   "Edit Currency",
-  "Our Mission",
+  "Report a Bug",
+  "Request a Feature",
   "Privacy Policy",
   "Other Apps",
   "About Us",
@@ -18,20 +19,23 @@ List<String> headers = [
 List<IconData> icons = [
   Icons.edit_outlined,
   Icons.public_outlined,
-  Icons.favorite_outline,
+  Icons.help_outline,
+  Icons.question_answer,
   Icons.lock_outlined,
   Icons.now_widgets_outlined,
   Icons.info_outlined,
 ];
 
-List<Widget> callback = [
-  EditGoals(),
-  Introduction(),
-  Introduction(),
-  Introduction(),
-  Introduction(),
-  Introduction(),
-];
+Future<void> _launchInBrowser(String url) async {
+  if (!await launch(
+    url,
+    forceSafariVC: true,
+    forceWebView: false,
+    headers: <String, String>{'my_header_key': 'my_header_value'},
+  )) {
+    throw 'Could not launch $url';
+  }
+}
 
 class SettingsScreen extends StatefulWidget {
   SettingsScreen({Key? key}) : super(key: key);
@@ -41,9 +45,79 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  String privacyPolicy =
+      "https://docs.google.com/document/d/1hB6N1HtlJuLWJxu45DOMXdmETF3yBOUkACw6gIA-f94/edit?usp=sharing";
+  String reportBug =
+      "https://docs.google.com/forms/d/e/1FAIpQLScAzeK9MwzyH_PIJSyLHFGGFeLRi-poulbny0QwogvRHzzT_w/viewform?usp=sf_link";
+  String requestFeature =
+      "https://docs.google.com/forms/d/e/1FAIpQLScAzeK9MwzyH_PIJSyLHFGGFeLRi-poulbny0QwogvRHzzT_w/viewform?usp=sf_link";
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    List<VoidCallback> callback = [
+      () {
+        Navigator.of(context).push(PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            pageBuilder: (BuildContext context, Animation<double> animation,
+                Animation<double> secondaryAnimation) {
+              return EditGoals();
+            }));
+      },
+      () {
+        Navigator.of(context).push(PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            pageBuilder: (BuildContext context, Animation<double> animation,
+                Animation<double> secondaryAnimation) {
+              return EditCurrency();
+            }));
+      },
+      () {
+        _launchInBrowser(reportBug);
+      },
+      () {
+        _launchInBrowser(requestFeature);
+      },
+      () {
+        _launchInBrowser(privacyPolicy);
+      },
+      () {
+        Navigator.of(context).push(PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            pageBuilder: (BuildContext context, Animation<double> animation,
+                Animation<double> secondaryAnimation) {
+              return OtherApps();
+            }));
+      },
+      () {
+        showAboutDialog(
+            context: context,
+            applicationIcon: Image.asset(
+              "assets/circleIcon.png",
+              height: size.height * 0.1,
+            ),
+            applicationName: 'Thank You',
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Created by Rohin Inani',
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('rhino.inani@gmail.com'),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Artwork by Freepiks and Riya Karkhanis',
+                  style: TextStyle(fontSize: size.height * 0.015),
+                ),
+              ),
+            ]);
+      },
+    ];
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -87,6 +161,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 (BuildContext context, int index) {
                   return SettingsCard(
                     index: index,
+                    onTap: callback[index],
                   );
                 },
                 childCount: headers.length,
@@ -103,22 +178,17 @@ class SettingsCard extends StatelessWidget {
   const SettingsCard({
     Key? key,
     required this.index,
+    required this.onTap,
   }) : super(key: key);
 
   final int index;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 500),
-            pageBuilder: (BuildContext context, Animation<double> animation,
-                Animation<double> secondaryAnimation) {
-              return callback[index];
-            }));
-      },
+      onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(
           vertical: size.height * 0.03,
@@ -173,28 +243,7 @@ class _EditGoalsState extends State<EditGoals> {
     Box userValues = Hive.box('userValues');
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Edit You Goals",
-          style: TextStyle(fontSize: size.height * 0.025),
-        ),
-        leading: Hero(
-          tag: 0,
-          child: Material(
-            type: MaterialType.transparency,
-            child: IconButton(
-              onPressed: () {
-                setState(() {});
-                Navigator.of(context).pop();
-              },
-              icon: Icon(
-                Icons.edit_outlined,
-                color: Color.fromRGBO(158, 193, 158, 1.0),
-              ),
-            ),
-          ),
-        ),
-      ),
+      appBar: buildSettingsScreensAppBar(size, context, 0),
       body: Column(
         children: [
           Padding(
@@ -209,8 +258,9 @@ class _EditGoalsState extends State<EditGoals> {
           ElevatedButton(
             onPressed: () async {
               setState(() {
-                target =
-                    double.parse(controller.value.text.replaceAll(',', ''));
+                target = double.parse(controller.value.text
+                    .replaceAll(',', '')
+                    .replaceAll('$currency', ''));
                 remainder = target - donated;
               });
               await setDonations();
@@ -221,7 +271,111 @@ class _EditGoalsState extends State<EditGoals> {
               "Change Goals",
               style: TextStyle(color: kBlackColor),
             ),
-            style: setButtonStyle(),
+            style: setGreenButtonStyle(),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class EditCurrency extends StatelessWidget {
+  const EditCurrency({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController controller = TextEditingController();
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: buildSettingsScreensAppBar(size, context, 1),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DonationsTextField(
+              textController: controller,
+              isAmount: false,
+              text: 'Enter Currency',
+              isTarget: false,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              currency = controller.value.text;
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              "Change Currency",
+              style: TextStyle(color: kBlackColor),
+            ),
+            style: setBlueButtonStyle(),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+AppBar buildSettingsScreensAppBar(Size size, BuildContext context, int index) {
+  return AppBar(
+    title: Text(
+      "${headers[index]}",
+      style: TextStyle(fontSize: size.height * 0.025),
+    ),
+    leading: Hero(
+      tag: index,
+      child: Material(
+        type: MaterialType.transparency,
+        child: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          icon: Icon(
+            icons[index],
+            color: index % 2 == 0
+                ? Color.fromRGBO(158, 193, 158, 1.0)
+                : Color(0xff97d6e5),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class OtherApps extends StatelessWidget {
+  const OtherApps({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    String impromptuGenerator = "https://hyperurl.co/impromptugenerator";
+    String pristineScreen = "https://smarturl.it/pristinescreen";
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: buildSettingsScreensAppBar(size, context, 5),
+      body: Column(
+        children: [
+          ListTile(
+            contentPadding: EdgeInsets.symmetric(
+              vertical: size.height * 0.03,
+              horizontal: size.width * 0.05,
+            ),
+            onTap: () {
+              _launchInBrowser(impromptuGenerator);
+            },
+            title: Text("Impromptu Generator"),
+            subtitle: Text("An easy way to practice impromptu public speaking"),
+            trailing: Icon(Icons.chevron_right_rounded),
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: size.width * 0.05,
+            ),
+            onTap: () {
+              _launchInBrowser(pristineScreen);
+            },
+            title: Text("Pristine Screen"),
+            subtitle: Text("An easy way to keep your Mac clean"),
+            trailing: Icon(Icons.chevron_right_rounded),
           )
         ],
       ),

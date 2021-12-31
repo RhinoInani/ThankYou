@@ -18,10 +18,17 @@ Future<bool> setDonations() async {
   }
 }
 
-ButtonStyle setButtonStyle() {
+ButtonStyle setGreenButtonStyle() {
   return ElevatedButton.styleFrom(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
     primary: mainGreen.withGreen(mainGreen.green + 8),
+  );
+}
+
+ButtonStyle setBlueButtonStyle() {
+  return ElevatedButton.styleFrom(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    primary: Color(0xff97d6e5),
   );
 }
 

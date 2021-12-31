@@ -95,68 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  ///CONFIRM DELETE
-  // Future<void> confirmDelete(Size size, Item card) async {
-  //   showDialog(
-  //       context: context,
-  //       barrierDismissible: false,
-  //       builder: (BuildContext context) {
-  //         return Center(
-  //           child: Container(
-  //             height: size.height * 0.2,
-  //             decoration: BoxDecoration(
-  //               borderRadius: BorderRadius.circular(15),
-  //               color: Colors.white,
-  //             ),
-  //             padding: EdgeInsets.all(size.width * 0.02),
-  //             child: Column(
-  //               children: [
-  //                 Text(
-  //                   "Confirm Delete",
-  //                   style: TextStyle(
-  //                     fontSize: size.height * 0.03,
-  //                     color: kBlackColor,
-  //                   ),
-  //                 ),
-  //                 Padding(
-  //                   padding: EdgeInsets.symmetric(vertical: size.height * 0.01),
-  //                   child: Text(
-  //                     "This action cannot be undone",
-  //                     style: TextStyle(
-  //                       fontSize: size.height * 0.013,
-  //                       color: kLightBlackColor,
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 OutlinedButton.icon(
-  //                   onPressed: () async {
-  //                     await box.delete(card.uuid);
-  //                     Navigator.of(context).pop();
-  //                   },
-  //                   icon: Icon(
-  //                     Icons.check,
-  //                     color: kBlackColor,
-  //                   ),
-  //                   style: OutlinedButton.styleFrom(
-  //                     shape: RoundedRectangleBorder(
-  //                       borderRadius: BorderRadius.circular(15),
-  //                     ),
-  //                   ),
-  //                   label: Text(
-  //                     "Confirm",
-  //                     style: TextStyle(
-  //                       fontSize: size.height * 0.02,
-  //                       color: kBlackColor,
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
 }
 
 class HeaderCard extends StatelessWidget {

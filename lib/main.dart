@@ -135,7 +135,7 @@ class _HolderState extends State<Holder> {
               icon: currentPage == 1
                   ? Icon(Icons.table_chart)
                   : Icon(Icons.table_chart_outlined),
-              title: Text("Tables"),
+              title: Text("Charts"),
               activeColor: Colors.lightBlue[300]!,
               inactiveColor: Colors.blueGrey[300],
             ),

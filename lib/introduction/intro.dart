@@ -119,7 +119,7 @@ class _IntroductionState extends State<Introduction> {
                 "Set goals",
                 style: TextStyle(color: kBlackColor),
               ),
-              style: setButtonStyle(),
+              style: setGreenButtonStyle(),
             ),
             decoration: pageDecoration,
           ),
@@ -171,7 +171,7 @@ class _IntroductionState extends State<Introduction> {
                         locale: Platform.localeName);
                     target = double.parse(controller.value.text
                         .replaceAll(',', '')
-                        .replaceAll('${format.currencySymbol}', ''));
+                        .replaceAll('$currency', ''));
                     await userValues.put('target', target);
                     await setDonations();
                     setState(() {
@@ -183,7 +183,7 @@ class _IntroductionState extends State<Introduction> {
                     "Set",
                     style: TextStyle(color: kBlackColor),
                   ),
-                  style: setButtonStyle(),
+                  style: setGreenButtonStyle(),
                 )
               ],
             ),
