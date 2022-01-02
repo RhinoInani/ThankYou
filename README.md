@@ -1,16 +1,14 @@
-# thank_you
+# Thank You
 
-A new simplistic mobile donation tracker.
+Is a goal oriented donation tracker that aids you in keeping track of your tax deductible amount.
 
-## Getting Started
+Every year I believe that everyone should have a set goal for how much they would like to donate. This helps in financial budgeting and gives you a feeling of satisfaction. This is what differentiates Thank You from other donation trackers.
 
-This project is a starting point for a Flutter application.
+You can find Thank You soon in the App Store and Play Store!
 
-A few resources to get you started if this is your first Flutter project:
+Keep donating and keep coding!
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+For further questions please contact: rhino.inani@gmail.com
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Thanks,
+Rhino Inani
