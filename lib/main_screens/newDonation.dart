@@ -237,7 +237,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                           error = true;
                         });
                       } else {
-                        setHive();
+                        await setHive();
                         Navigator.of(context).pushNamedAndRemoveUntil(
                             '/home', (Route<dynamic> route) => false);
                         setState(() {});

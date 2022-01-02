@@ -106,7 +106,7 @@ class HeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      height: size.width * 0.2,
+      height: size.width * 0.22,
       padding: EdgeInsets.only(
         top: kToolbarHeight + size.height * 0.04,
         left: size.width * 0.03,

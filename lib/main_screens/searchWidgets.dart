@@ -29,12 +29,12 @@ class SearchWidget extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return SearchFinder(query: query);
+    return SearchFinder(query: query.toLowerCase());
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return SearchFinder(query: query);
+    return SearchFinder(query: query.toLowerCase());
   }
 }
 
@@ -53,9 +53,9 @@ class SearchFinder extends StatelessWidget {
             ? donationsBox.values.toList().reversed.toList() // whole list
             : donationsBox.values
                 .where((c) =>
-                    c.recipient!.toLowerCase().contains(query) ||
-                    dateFormat(c.date!).contains(query) ||
-                    c.item!.toLowerCase().contains(query))
+                    c.recipient!.toLowerCase().contains(query.toLowerCase()) ||
+                    dateFormat(c.date!).contains(query.toLowerCase()) ||
+                    c.item!.toLowerCase().contains(query.toLowerCase()))
                 .toList();
 
         return results.isEmpty
@@ -83,7 +83,7 @@ class SearchFinder extends StatelessWidget {
                       donationListItem.recipient!,
                     ),
                     subtitle: Text(
-                      donationListItem.amount!.toString(),
+                      donationListItem.amount!.toStringAsFixed(2),
                       textScaleFactor: 1.0,
                     ),
                     trailing: Text(

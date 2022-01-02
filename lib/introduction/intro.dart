@@ -96,7 +96,7 @@ class _IntroductionState extends State<Introduction> {
         pages: [
           PageViewModel(
             title: "Keep track of your donations",
-            body: "Never forget what your tax deducible amount is again!",
+            body: "Never forget what your tax deductible amount is!",
             image: Image(
               image: image1,
               repeat: ImageRepeat.repeat,
@@ -105,9 +105,8 @@ class _IntroductionState extends State<Introduction> {
           ),
           PageViewModel(
             title: "Set Personal Goals",
-            body:
-                "Set goals for how much you would like to donate each year, and "
-                "\"Thank You\" will keep track of how far along you are with this process",
+            body: "Set a goal for your annual donation amount, and "
+                "\"Thank You\" will keep track of your progress towards your target!",
             image: Image(
               image: image2,
             ),
@@ -116,7 +115,7 @@ class _IntroductionState extends State<Introduction> {
                 setGoals(context);
               },
               child: Text(
-                "Set goals",
+                "Set your Target",
                 style: TextStyle(color: kBlackColor),
               ),
               style: setGreenButtonStyle(),
@@ -126,8 +125,8 @@ class _IntroductionState extends State<Introduction> {
           PageViewModel(
             title: "Give back to the community",
             body:
-                "Here at Thank You we believe in giving back to the community,"
-                "with a minimalistic interface it is easy for you to track your donations!",
+                "Here at Thank You we believe in giving back to the community. "
+                "\n\nWith an easy minimalistic interface it is easy to track your donations and the impact you are making!",
             image: Image(
               image: image3,
             ),
@@ -152,16 +151,16 @@ class _IntroductionState extends State<Introduction> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Set your goals"),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Text("Set your goals"),
+                // ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: DonationsTextField(
                     textController: controller,
                     isAmount: true,
-                    text: 'Set a Target Amount',
+                    text: 'Set your Target Amount',
                     isTarget: true,
                   ),
                 ),
