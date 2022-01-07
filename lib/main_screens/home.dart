@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:thank_you/main_screens/searchWidgets.dart';
+import 'package:thank_you/components/searchWidgets.dart';
 import 'package:thank_you/userValues.dart';
 
 import '../components/recentDonationCard.dart';

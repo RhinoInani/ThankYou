@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:thank_you/userValues.dart';
 
 class DonationsTextField extends StatefulWidget {
   DonationsTextField(
@@ -99,7 +100,8 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
             try {
               NumberFormat f = new NumberFormat("#,##0.00");
               string = widget.isAmount
-                  ? f.format(f.parse(string.replaceAll(',', '')))
+                  ? f.format(f.parse(
+                      string.replaceAll(',', '').replaceAll('', '$currency')))
                   : string;
               setState(() {
                 errorText = "";

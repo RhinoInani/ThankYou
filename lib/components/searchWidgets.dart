@@ -70,7 +70,6 @@ class SearchFinder extends StatelessWidget {
                 itemBuilder: (context, index) {
                   // passing as a custom list
                   final Item donationListItem = results[index];
-
                   return ListTile(
                     onTap: () {
                       Navigator.pushReplacement(

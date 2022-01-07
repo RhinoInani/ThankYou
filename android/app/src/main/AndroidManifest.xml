@@ -5,6 +5,7 @@
         android:label="Thank You"
         android:icon="@mipmap/launcher_icon">
         <activity
+            android:exported="false"
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

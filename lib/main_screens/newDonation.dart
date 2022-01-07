@@ -282,7 +282,6 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
     );
     if (image == null) return;
 
-    // final finalImage = await savePermanentImage(image.path);
     setState(() {
       _image = File(image.path);
       imagePicked = true;

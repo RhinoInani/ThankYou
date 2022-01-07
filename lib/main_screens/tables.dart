@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:thank_you/components/buildMethods.dart';
+import 'package:thank_you/components/searchWidgets.dart';
 import 'package:thank_you/main_screens/donationDetails.dart';
-import 'package:thank_you/main_screens/searchWidgets.dart';
 import 'package:thank_you/userValues.dart';
 
 class TablesScreen extends StatefulWidget {

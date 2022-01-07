@@ -50,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String reportBug =
       "https://docs.google.com/forms/d/e/1FAIpQLScAzeK9MwzyH_PIJSyLHFGGFeLRi-poulbny0QwogvRHzzT_w/viewform?usp=sf_link";
   String requestFeature =
-      "https://docs.google.com/forms/d/e/1FAIpQLScAzeK9MwzyH_PIJSyLHFGGFeLRi-poulbny0QwogvRHzzT_w/viewform?usp=sf_link";
+      "https://docs.google.com/forms/d/e/1FAIpQLSdflfyY6PUmLu93Xvn1xbjYkIPoi6DPw92kYzdN7b91_ane0g/viewform?usp=sf_link";
 
   @override
   Widget build(BuildContext context) {
@@ -187,41 +187,29 @@ class SettingsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: size.height * 0.03,
-          horizontal: size.width * 0.05,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: size.height * 0.015),
+      child: ListTile(
+        onTap: onTap,
+        title: Text(
+          headers[index],
+          style: TextStyle(fontSize: size.height * 0.02, color: kBlackColor),
         ),
-        child: Row(
-          children: [
-            Hero(
-              tag: index,
-              child: Material(
-                type: MaterialType.transparency,
-                child: Icon(
-                  icons[index],
-                  color: index % 2 == 0
-                      ? Color.fromRGBO(158, 193, 158, 1.0)
-                      : Color(0xff97d6e5),
-                ),
-              ),
+        leading: Hero(
+          tag: index,
+          child: Material(
+            type: MaterialType.transparency,
+            child: Icon(
+              icons[index],
+              color: index % 2 == 0
+                  ? Color.fromRGBO(158, 193, 158, 1.0)
+                  : Color(0xff97d6e5),
             ),
-            SizedBox(
-              width: size.width * 0.05,
-            ),
-            Text(
-              headers[index],
-              style:
-                  TextStyle(fontSize: size.height * 0.02, color: kBlackColor),
-            ),
-            Spacer(),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: kLightBlackColor,
-            ),
-          ],
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios_rounded,
+          color: kLightBlackColor,
         ),
       ),
     );
@@ -347,7 +335,7 @@ class OtherApps extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String impromptuGenerator = "https://hyperurl.co/impromptugenerator";
+    String impromptuGenerator = "https://smarturl.it/impromptugenerator";
     String pristineScreen = "https://smarturl.it/pristinescreen";
     Size size = MediaQuery.of(context).size;
     return Scaffold(

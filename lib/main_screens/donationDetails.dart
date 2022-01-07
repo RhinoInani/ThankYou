@@ -100,7 +100,7 @@ class _DonationDetailsState extends State<DonationDetails> {
           )
         ],
       ),
-      //dont need more info than this becuase i have set the theme in the beginning files
+      //don't need more info than this because i have set the theme in the beginning files
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.04),
         child: Column(
@@ -131,6 +131,10 @@ class _DonationDetailsState extends State<DonationDetails> {
             DetailsColumn(
               title: 'Date:',
               description: '${DateFormat.yMd().format(widget.item.date!)}',
+            ),
+            DetailsColumn(
+              title: widget.item.isMoney! ? 'Amount' : 'Value:',
+              description: '${widget.item.amount}',
             ),
             Visibility(
               visible: !widget.item.isMoney!,
