@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:thank_you/components/buildMethods.dart';
 import 'package:thank_you/userValues.dart';
 
@@ -17,6 +19,7 @@ class DonationDetails extends StatefulWidget {
 
 class _DonationDetailsState extends State<DonationDetails> {
   Box donations = Hive.box<Item>('donations');
+  String image = "";
 
   Future<void> confirmDelete(Size size, context) async {
     showDialog(
@@ -87,6 +90,22 @@ class _DonationDetailsState extends State<DonationDetails> {
   }
 
   @override
+  void initState() {
+    loadPicture();
+    super.initState();
+  }
+
+  void loadPicture() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final name = basename(widget.item.imagePath!);
+    final File img = File('${directory.path}/$name');
+
+    setState(() {
+      image = img.path;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
@@ -151,11 +170,11 @@ class _DonationDetailsState extends State<DonationDetails> {
               ),
             ),
             Visibility(
-              visible: widget.item.imagePath!.length >= 1,
+              visible: widget.item.imagePath!.length >= 1 && image.isNotEmpty,
               child: DetailsColumn(
                 description: '',
                 title: 'Picture of Donation',
-                imagePath: widget.item.imagePath!,
+                imagePath: image,
               ),
             ),
             SizedBox(

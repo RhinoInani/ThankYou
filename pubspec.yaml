@@ -2,8 +2,7 @@ name: thank_you
 description: A new minimilstic mobile donation tracker.
 publish_to: 'App Store and Play Store'
 
-version: 1.0.0+1
-version_code: 1
+version: 1.0.4+7
 
 environment:
   sdk: '>=2.12.0 <3.0.0'

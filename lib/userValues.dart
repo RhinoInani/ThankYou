@@ -18,6 +18,7 @@ double remainder = 0.00;
 double donated = 0.00;
 bool firstTime = true;
 bool goalsSet = false;
+int compression = 75;
 
 var moneyFormat =
     NumberFormat.simpleCurrency(locale: Platform.localeName.toString());

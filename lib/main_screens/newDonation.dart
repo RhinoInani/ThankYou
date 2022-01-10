@@ -261,7 +261,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
     }
     final XFile? image = await _imagePicker.pickImage(
       source: ImageSource.camera,
-      imageQuality: 75,
+      imageQuality: compression,
     );
     if (image == null) return;
 

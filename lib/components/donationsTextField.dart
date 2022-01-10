@@ -81,8 +81,9 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
           expands: false,
           textCapitalization: TextCapitalization.sentences,
           onSubmitted: (string) {
-            String replacedString =
-                widget.isAmount ? string.replaceAll(',', '') : string;
+            String replacedString = widget.isAmount
+                ? string.replaceAll(',', '').replaceAll('$currency', '')
+                : string;
             widget.isAmount
                 ? setState(() {
                     widget.textController.text = NumberFormat.simpleCurrency(
@@ -100,8 +101,7 @@ class _DonationsTextFieldState extends State<DonationsTextField> {
             try {
               NumberFormat f = new NumberFormat("#,##0.00");
               string = widget.isAmount
-                  ? f.format(f.parse(
-                      string.replaceAll(',', '').replaceAll('', '$currency')))
+                  ? f.format(f.parse(string.replaceAll(',', '')))
                   : string;
               setState(() {
                 errorText = "";

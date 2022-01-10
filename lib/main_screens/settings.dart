@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:thank_you/components/buildMethods.dart';
+import 'package:thank_you/components/custom_icon_icons.dart';
 import 'package:thank_you/components/donationsTextField.dart';
 import 'package:thank_you/userValues.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 List<String> headers = [
   "Edit Goals",
-  "Edit Currency",
+  "Image Compression",
+  // "Edit Currency",
   "Report a Bug",
   "Request a Feature",
   "Privacy Policy",
@@ -18,7 +20,8 @@ List<String> headers = [
 
 List<IconData> icons = [
   Icons.edit_outlined,
-  Icons.public_outlined,
+  // Icons.public_outlined,
+  CustomIcon.camera_svgrepo_com,
   Icons.help_outline,
   Icons.question_answer,
   Icons.lock_outlined,
@@ -52,9 +55,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String requestFeature =
       "https://docs.google.com/forms/d/e/1FAIpQLSdflfyY6PUmLu93Xvn1xbjYkIPoi6DPw92kYzdN7b91_ane0g/viewform?usp=sf_link";
 
+  List<String> levels = ["High", "Normal", "None"];
+  late String levelsValue;
+
+  @override
+  void initState() {
+    if (compression == 50) {
+      levelsValue = "High";
+    } else if (compression == 75) {
+      levelsValue = "Normal";
+    } else {
+      levelsValue = "None";
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    Box userValues = Hive.box('userValues');
     List<VoidCallback> callback = [
       () {
         Navigator.of(context).push(PageRouteBuilder(
@@ -64,14 +83,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               return EditGoals();
             }));
       },
-      () {
-        Navigator.of(context).push(PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 500),
-            pageBuilder: (BuildContext context, Animation<double> animation,
-                Animation<double> secondaryAnimation) {
-              return EditCurrency();
-            }));
-      },
+      // () {
+      //   Navigator.of(context).push(PageRouteBuilder(
+      //       transitionDuration: Duration(milliseconds: 500),
+      //       pageBuilder: (BuildContext context, Animation<double> animation,
+      //           Animation<double> secondaryAnimation) {
+      //         return EditCurrency();
+      //       }));
+      // },
+      () {},
       () {
         _launchInBrowser(reportBug);
       },
@@ -118,6 +138,53 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ]);
       },
     ];
+
+    Map<String, Widget> trailing = {
+      'Image Compression': Container(
+        padding: EdgeInsets.only(left: 16, right: 16),
+        decoration: BoxDecoration(
+            border: Border.all(color: kLightBlackColor),
+            borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: size.width * 0.035,
+          ),
+          child: DropdownButton(
+            dropdownColor: Colors.transparent,
+            underline: Container(),
+            elevation: 5,
+            icon: Icon(Icons.arrow_drop_down),
+            iconSize: size.height * 0.04,
+            isExpanded: false,
+            style: TextStyle(color: kBlackColor, fontSize: 17.0),
+            value: levelsValue,
+            onChanged: (dynamic value) {
+              if (value == "High") {
+                compression = 50;
+              } else if (value == "None") {
+                compression = 100;
+              } else {
+                compression = 75;
+              }
+              setState(() {
+                levelsValue = value;
+              });
+              userValues.put('compression', compression);
+            },
+            items: levels.map((value) {
+              return DropdownMenuItem(
+                value: value,
+                child: Text(
+                  value,
+                  style: GoogleFonts.poppins(),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ),
+    };
+
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -162,6 +229,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   return SettingsCard(
                     index: index,
                     onTap: callback[index],
+                    trailing: trailing.containsKey(headers[index].toString())
+                        ? trailing[headers[index].toString()]
+                        : null,
                   );
                 },
                 childCount: headers.length,
@@ -179,10 +249,12 @@ class SettingsCard extends StatelessWidget {
     Key? key,
     required this.index,
     required this.onTap,
+    this.trailing,
   }) : super(key: key);
 
   final int index;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -207,10 +279,12 @@ class SettingsCard extends StatelessWidget {
             ),
           ),
         ),
-        trailing: Icon(
-          Icons.arrow_forward_ios_rounded,
-          color: kLightBlackColor,
-        ),
+        trailing: trailing != null
+            ? trailing
+            : Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: kLightBlackColor,
+              ),
       ),
     );
   }
@@ -267,37 +341,94 @@ class _EditGoalsState extends State<EditGoals> {
   }
 }
 
-class EditCurrency extends StatelessWidget {
-  const EditCurrency({Key? key}) : super(key: key);
+// class EditCurrency extends StatelessWidget {
+//   const EditCurrency({Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     TextEditingController controller = TextEditingController();
+//     Size size = MediaQuery.of(context).size;
+//     return Scaffold(
+//       appBar: buildSettingsScreensAppBar(size, context, 1),
+//       body: Column(
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: DonationsTextField(
+//               textController: controller,
+//               isAmount: false,
+//               text: 'Enter Currency',
+//               isTarget: false,
+//             ),
+//           ),
+//           ElevatedButton(
+//             onPressed: () async {
+//               currency = controller.value.text;
+//               Navigator.of(context).pop();
+//             },
+//             child: Text(
+//               "Change Currency",
+//               style: TextStyle(color: kBlackColor),
+//             ),
+//             style: setBlueButtonStyle(),
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+class ImageCompression extends StatelessWidget {
+  const ImageCompression({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController controller = TextEditingController();
+    List<String> levels = ["High", "Normal", "Low", "None"];
+    String levelsValue = "Normal";
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: buildSettingsScreensAppBar(size, context, 1),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: DonationsTextField(
-              textController: controller,
-              isAmount: false,
-              text: 'Enter Currency',
-              isTarget: false,
+          Container(
+            padding: EdgeInsets.only(left: 16, right: 16),
+            decoration: BoxDecoration(
+                border: Border.all(color: kLightBlackColor),
+                borderRadius: BorderRadius.circular(20)),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: size.width * 0.035,
+              ),
+              child: DropdownButton(
+                dropdownColor: Color(0xff97d6e5),
+                underline: Container(),
+                elevation: 5,
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: size.height * 0.04,
+                isExpanded: false,
+                style: TextStyle(color: kBlackColor, fontSize: 17.0),
+                value: "Normal",
+                onChanged: (dynamic value) {
+                  if (value == "High (50% Compression)") {
+                    compression = 50;
+                  } else if (value == "None") {
+                    compression = 100;
+                  } else {
+                    compression = 75;
+                  }
+                },
+                items: levels.map((value) {
+                  return DropdownMenuItem(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: GoogleFonts.poppins(),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              currency = controller.value.text;
-              Navigator.of(context).pop();
-            },
-            child: Text(
-              "Change Currency",
-              style: TextStyle(color: kBlackColor),
-            ),
-            style: setBlueButtonStyle(),
-          )
         ],
       ),
     );
