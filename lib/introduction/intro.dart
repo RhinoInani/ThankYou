@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:thank_you/components/buildMethods.dart';
 import 'package:thank_you/components/donationsTextField.dart';
@@ -166,8 +163,6 @@ class _IntroductionState extends State<Introduction> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    var format = NumberFormat.simpleCurrency(
-                        locale: Platform.localeName);
                     target = double.parse(controller.value.text
                         .replaceAll(',', '')
                         .replaceAll('$currency', ''));

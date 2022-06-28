@@ -24,7 +24,7 @@ class DonationsTextField extends StatefulWidget {
 }
 
 class _DonationsTextFieldState extends State<DonationsTextField> {
-  String locale = Platform.localeName.toString();
+  String locale = localeMain;
 
   String get _currency =>
       NumberFormat.compactSimpleCurrency(locale: locale).currencySymbol;

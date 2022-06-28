@@ -15,8 +15,13 @@ import '../components/donationsTextField.dart';
 import '../userValues.dart';
 
 class NewDonationsScreen extends StatefulWidget {
-  NewDonationsScreen({Key? key, required this.isMoney}) : super(key: key);
+  NewDonationsScreen({
+    Key? key,
+    required this.isMoney,
+    this.edit = false,
+  }) : super(key: key);
   final bool isMoney;
+  final bool edit;
 
   @override
   _NewDonationsScreenState createState() => _NewDonationsScreenState();
@@ -37,6 +42,25 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   var userValues = Hive.box('userValues');
 
   bool error = false;
+  String id = "";
+
+  @override
+  void initState() {
+    id = userValues.get('donationsCount', defaultValue: '0').toString();
+    if (widget.edit) {
+      recipientController.text = editItem!.recipient.toString();
+      amountController.text = editItem!.amount.toString();
+      picked = editItem!.date;
+      itemController.text = editItem!.item.toString();
+      notesController.text = editItem!.notes.toString();
+      if (editItem!.imagePath.toString().length > 1) {
+        _image = File(editItem!.imagePath.toString());
+        imagePicked = true;
+      }
+      id = editItem!.uuid.toString();
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +150,7 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "${DateFormat.yMMMMd(Platform.localeName.toString()).format(picked ??= DateTime.now())}",
+                            "${DateFormat.yMMMMd(localeMain).format(picked ??= DateTime.now())}",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                               color: Colors.black,
@@ -297,7 +321,6 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
   }
 
   Future<void> setHive() async {
-    String id = userValues.get('donationsCount', defaultValue: '0').toString();
     String finalImage = "";
     if (_image != null) {
       final finalFile = await savePermanentImage(_image!.path);
@@ -382,7 +405,6 @@ class _NewDonationsScreenState extends State<NewDonationsScreen> {
               onSurface: Colors.black,
               secondary: Colors.black,
               onSecondary: Colors.black,
-              secondaryVariant: Colors.black,
               brightness: Brightness.dark,
             ),
             dialogBackgroundColor: Colors.white,

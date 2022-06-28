@@ -14,6 +14,7 @@ import 'introduction/intro.dart';
 import 'main_screens/newDonation.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(ItemAdapter());
   await Hive.openBox('userValues');
@@ -34,7 +35,9 @@ class MyApp extends StatelessWidget {
     WidgetsFlutterBinding.ensureInitialized();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Colors.black,
-      statusBarColor: Colors.black,
+      statusBarColor: Colors.white,
+      systemNavigationBarContrastEnforced: true,
+      systemStatusBarContrastEnforced: true,
     ));
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitDown,
@@ -185,6 +188,19 @@ class _HolderState extends State<Holder> {
               }));
             },
           ),
+          // SpeedDialChild(
+          //   child: Icon(
+          //     Icons.local_gas_station_outlined,
+          //   ),
+          //   backgroundColor: mainRed,
+          //   label: 'Mileage',
+          //   labelStyle: TextStyle(fontSize: 16.0),
+          //   onTap: () {
+          //     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          //       return NewDonationsScreen(isMoney: false);
+          //     }));
+          //   },
+          // ),
           SpeedDialChild(
             child: Icon(Icons.settings),
             backgroundColor: Colors.deepPurple[300],

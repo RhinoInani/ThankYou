@@ -5,7 +5,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:share_plus/share_plus.dart';
 import 'package:thank_you/components/buildMethods.dart';
+import 'package:thank_you/main_screens/newDonation.dart';
 import 'package:thank_you/userValues.dart';
 
 class DonationDetails extends StatefulWidget {
@@ -113,10 +117,87 @@ class _DonationDetailsState extends State<DonationDetails> {
         actions: [
           IconButton(
             onPressed: () async {
+              editItem = widget.item;
+              Navigator.of(context)
+                  .pushReplacement(MaterialPageRoute(builder: (context) {
+                return NewDonationsScreen(
+                  isMoney: widget.item.isMoney!,
+                  edit: true,
+                );
+              }));
+            },
+            icon: Icon(Icons.edit),
+          ),
+          IconButton(
+            onPressed: () async {
+              final pdf = pw.Document();
+              pdf.addPage(
+                pw.Page(
+                  build: (pw.Context context) => pw.Container(
+                    child: pw.Column(
+                      mainAxisAlignment: pw.MainAxisAlignment.start,
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        pw.Center(
+                          child: pw.Text('Donation Receipt',
+                              style: pw.TextStyle(
+                                fontSize: 30,
+                                fontWeight: pw.FontWeight.bold,
+                              )),
+                        ),
+                        pw.Divider(
+                          color: widget.item.isMoney!
+                              ? PdfColor.fromHex('#C1E1C1')
+                              : PdfColor.fromHex('#AED5F4'),
+                          thickness: 1.7,
+                          height: 10,
+                        ),
+                        pw.Text(
+                          "Donation Type:\n${widget.item.isMoney! ? 'Money' : 'Items'}",
+                          style: pdfMainBodyStyle(),
+                        ),
+                        pw.SizedBox(height: 15),
+                        pw.Text('Recipient: \n${widget.item.recipient}',
+                            style: pdfMainBodyStyle()),
+                        pw.SizedBox(height: 15),
+                        pw.Text(
+                            'Donation Date: \n${dateFormat(widget.item.date!)}',
+                            style: pdfMainBodyStyle()),
+                        pw.SizedBox(height: 15),
+                        pw.Text(
+                            '${widget.item.isMoney! ? 'Amount:' : 'Value:'} \n${moneyFormat.currencySymbol}${widget.item.amount}',
+                            style: pdfMainBodyStyle()),
+                        pw.SizedBox(height: 15),
+                        widget.item.notes!.length > 1
+                            ? pw.Text(
+                                'Additional Notes: \n${widget.item.notes}',
+                                style: pdfMainBodyStyle())
+                            : pw.Container(),
+                        pw.SizedBox(height: 15),
+                        widget.item.imagePath.toString().length > 1
+                            ? pw.Image(pw.MemoryImage(
+                                File('${widget.item.imagePath}')
+                                    .readAsBytesSync(),
+                              ))
+                            : pw.Container(),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+              final directory = await getApplicationDocumentsDirectory();
+              final file = File("${directory.path}/donationReceipt.pdf");
+              await file.writeAsBytes(await pdf.save());
+              Share.shareFiles(['${file.path}'], text: 'Donation Receipt');
+            },
+            icon: Platform.isIOS ? Icon(Icons.ios_share) : Icon(Icons.share),
+          ),
+          IconButton(
+            onPressed: () async {
               await confirmDelete(size, context);
             },
             icon: Icon(Icons.delete),
-          )
+          ),
         ],
       ),
       //don't need more info than this because i have set the theme in the beginning files
@@ -183,6 +264,12 @@ class _DonationDetailsState extends State<DonationDetails> {
           ],
         ),
       ),
+    );
+  }
+
+  pw.TextStyle pdfMainBodyStyle() {
+    return pw.TextStyle(
+      fontSize: 20,
     );
   }
 }

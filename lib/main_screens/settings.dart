@@ -5,7 +5,7 @@ import 'package:thank_you/components/buildMethods.dart';
 import 'package:thank_you/components/custom_icon_icons.dart';
 import 'package:thank_you/components/donationsTextField.dart';
 import 'package:thank_you/userValues.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 List<String> headers = [
   "Edit Goals",
@@ -30,11 +30,8 @@ List<IconData> icons = [
 ];
 
 Future<void> _launchInBrowser(String url) async {
-  if (!await launch(
+  if (!await launchUrlString(
     url,
-    forceSafariVC: true,
-    forceWebView: false,
-    headers: <String, String>{'my_header_key': 'my_header_value'},
   )) {
     throw 'Could not launch $url';
   }
@@ -384,7 +381,6 @@ class ImageCompression extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<String> levels = ["High", "Normal", "Low", "None"];
-    String levelsValue = "Normal";
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: buildSettingsScreensAppBar(size, context, 1),
