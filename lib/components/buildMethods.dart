@@ -35,3 +35,18 @@ ButtonStyle setBlueButtonStyle() {
 String dateFormat(DateTime date) {
   return "${DateFormat.yMd(Platform.localeName).format(date)}";
 }
+
+List itemToList(Item item) {
+  //THE LIST IS IN THIS ORDER
+  //"Type", "Date", "Recipient", "Amount", "Item", "Notes", "UUID",
+
+  return [
+    "${item.isMoney! ? "Money" : "Item"}",
+    "${dateFormat(item.date!)}",
+    "${item.recipient!}",
+    "${moneyFormat.currencySymbol}${item.amount!.toStringAsFixed(2)}",
+    "${item.isMoney! ? "None" : "${item.item!}"}",
+    "${item.notes!}",
+    "${item.uuid}",
+  ];
+}

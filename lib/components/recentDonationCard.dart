@@ -8,13 +8,21 @@ import 'package:thank_you/userValues.dart';
 
 import '../main_screens/donationDetails.dart';
 
-class RecentDonationsCard extends StatelessWidget {
+class RecentDonationsCard extends StatefulWidget {
   const RecentDonationsCard({
     Key? key,
     required this.item,
   }) : super(key: key);
 
   final Item item;
+
+  @override
+  State<RecentDonationsCard> createState() => _RecentDonationsCardState();
+}
+
+class _RecentDonationsCardState extends State<RecentDonationsCard> {
+  bool longPress = false;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -22,12 +30,28 @@ class RecentDonationsCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 500),
-            pageBuilder: (BuildContext context, Animation<double> animation,
-                Animation<double> secondaryAnimation) {
-              return DonationDetails(item: item);
-            }));
+        if (longPress == false) {
+          Navigator.of(context).push(PageRouteBuilder(
+              transitionDuration: Duration(milliseconds: 500),
+              pageBuilder: (BuildContext context, Animation<double> animation,
+                  Animation<double> secondaryAnimation) {
+                return DonationDetails(item: widget.item);
+              }));
+        } else {
+          setState(() {
+            longPress = false;
+            selectedItems.remove(widget.item.uuid!);
+            print(selectedItems);
+          });
+        }
+      },
+      onLongPress: () {
+        setState(() {
+          longPress = true;
+          if (!selectedItems.contains(widget.item.uuid!)) {
+            selectedItems.add(widget.item.uuid!);
+          }
+        });
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -36,7 +60,11 @@ class RecentDonationsCard extends StatelessWidget {
         ),
         width: size.width * 0.85,
         decoration: BoxDecoration(
-          color: !item.isMoney! ? mainBlue : mainGreen,
+          color: longPress
+              ? Colors.grey
+              : !widget.item.isMoney!
+                  ? mainBlue
+                  : mainGreen,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
@@ -57,7 +85,7 @@ class RecentDonationsCard extends StatelessWidget {
                     right: 0,
                     child: Container(
                       child: Text(
-                        "${dateFormat(item.date!)}",
+                        "${dateFormat(widget.item.date!)}",
                         style: TextStyle(
                           fontSize: size.height * 0.02,
                         ),
@@ -68,11 +96,11 @@ class RecentDonationsCard extends StatelessWidget {
                     child: Container(
                       width: size.width * 0.45,
                       child: Hero(
-                        tag: item.uuid!,
+                        tag: widget.item.uuid!,
                         child: Material(
                           type: MaterialType.transparency,
                           child: Text(
-                            "${item.recipient!}",
+                            "${widget.item.recipient!}",
                             maxLines: 2,
                             softWrap: true,
                             overflow: TextOverflow.ellipsis,
@@ -83,7 +111,7 @@ class RecentDonationsCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -98,7 +126,7 @@ class RecentDonationsCard extends StatelessWidget {
                       child: Container(
                         width: size.width * 0.55,
                         child: Text(
-                          "${format.currencySymbol}${item.amount!.toStringAsFixed(2)}",
+                          "${format.currencySymbol}${widget.item.amount!.toStringAsFixed(2)}",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: size.height * 0.025,
@@ -109,9 +137,9 @@ class RecentDonationsCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Visibility(
-                        visible: !item.isMoney!,
+                        visible: !widget.item.isMoney!,
                         child: Text(
-                          item.item!,
+                          widget.item.item!,
                           style: TextStyle(
                             color: Colors.grey[700],
                           ),
@@ -122,19 +150,17 @@ class RecentDonationsCard extends StatelessWidget {
                   ],
                 ),
                 Visibility(
-                    visible: item.notes!.length >= 1,
+                    visible: widget.item.notes!.length >= 1,
                     child: Icon(
                       CustomIcon.notes_notepad_svgrepo_com,
                     )),
                 Visibility(
                   maintainInteractivity: false,
                   maintainSize: false,
-                  visible: item.imagePath!.length >= 1,
-                  child: item.imagePath!.length >= 1
-                      ? Icon(
-                          CustomIcon.camera_svgrepo_com,
-                        )
-                      : SizedBox.shrink(),
+                  visible: widget.item.imagePath!.length >= 1,
+                  child: Icon(
+                    CustomIcon.camera_svgrepo_com,
+                  ),
                 ),
               ],
             ),

@@ -1,6 +1,11 @@
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:thank_you/components/buildMethods.dart';
 import 'package:thank_you/components/custom_icon_icons.dart';
 import 'package:thank_you/components/donationsTextField.dart';
@@ -9,19 +14,23 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 List<String> headers = [
   "Edit Goals",
+  'Additional Info',
   "Image Compression",
   // "Edit Currency",
+  "Export to CSV",
   "Report a Bug",
   "Request a Feature",
   "Privacy Policy",
-  "Other Apps",
+  "Other Resources",
   "About Us",
 ];
 
 List<IconData> icons = [
   Icons.edit_outlined,
   // Icons.public_outlined,
+  Icons.info_outlined,
   CustomIcon.camera_svgrepo_com,
+  CustomIcon.export_outline,
   Icons.help_outline,
   Icons.question_answer,
   Icons.lock_outlined,
@@ -71,6 +80,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     Box userValues = Hive.box('userValues');
+    var donations = Hive.box<Item>('donations');
+
     List<VoidCallback> callback = [
       () {
         Navigator.of(context).push(PageRouteBuilder(
@@ -88,7 +99,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
       //         return EditCurrency();
       //       }));
       // },
-      () {},
+      () {
+        setState(() {
+          additionalInfo = !additionalInfo;
+        });
+        userValues.put('additionalInfo', additionalInfo);
+      },
+      () {
+        //nothing for image compression
+      },
+      () async {
+        List<List> items = [
+          [
+            "Type",
+            "Date",
+            "Recipient",
+            "Amount",
+            "Item",
+            "Notes",
+            "UUID (DO NOT EDIT)",
+          ],
+        ];
+        for (int i = 0; i < donations.length; i++) {
+          Item item = donations.getAt(i)!;
+          items.add(itemToList(item));
+        }
+        String csvData = ListToCsvConverter().convert(items);
+        final String directory = (await getApplicationSupportDirectory()).path;
+        final path = "$directory/ThankYouAppDonations${DateTime.now()}.csv";
+        final File file = File(path);
+        File newFile = await file.writeAsString(csvData);
+        Share.shareFiles(['${newFile.path}'], text: "Donation's CSV");
+      },
       () {
         _launchInBrowser(reportBug);
       },
@@ -103,7 +145,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             transitionDuration: Duration(milliseconds: 500),
             pageBuilder: (BuildContext context, Animation<double> animation,
                 Animation<double> secondaryAnimation) {
-              return OtherApps();
+              return OtherResources();
             }));
       },
       () {
@@ -118,7 +160,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Created by Rohin Inani',
+                  'Created with ♡ by Rohin Inani',
                 ),
               ),
               Padding(
@@ -129,7 +171,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Artwork by Freepiks and Riya Karkhanis',
-                  style: TextStyle(fontSize: size.height * 0.015),
+                  style: TextStyle(
+                    fontSize: size.height * 0.015,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ]);
@@ -180,6 +225,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
+      'Additional Info': Switch.adaptive(
+          value: additionalInfo,
+          activeColor: mainBlue,
+          onChanged: (change) {
+            setState(() {
+              change = additionalInfo;
+            });
+            userValues.put('additionalInfo', additionalInfo);
+          }),
     };
 
     return Scaffold(
@@ -192,6 +246,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               expandedHeight: size.height * 0.2,
               floating: false,
               pinned: true,
+              leading: IconButton(
+                icon: Icon(
+                    Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              ),
               flexibleSpace: FlexibleSpaceBar(
                 background: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -457,43 +518,71 @@ AppBar buildSettingsScreensAppBar(Size size, BuildContext context, int index) {
   );
 }
 
-class OtherApps extends StatelessWidget {
-  const OtherApps({Key? key}) : super(key: key);
+class OtherResources extends StatelessWidget {
+  const OtherResources({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     String impromptuGenerator = "https://smarturl.it/impromptugenerator";
     String pristineScreen = "https://smarturl.it/pristinescreen";
+    String instagram = "https://www.instagram.com/appsbyrhino/";
+    String github = "https://github.com/RhinoInani";
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: buildSettingsScreensAppBar(size, context, 5),
       body: Column(
         children: [
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(
-              vertical: size.height * 0.03,
-              horizontal: size.width * 0.05,
-            ),
-            onTap: () {
-              _launchInBrowser(impromptuGenerator);
-            },
-            title: Text("Impromptu Generator"),
-            subtitle: Text("An easy way to practice impromptu public speaking"),
-            trailing: Icon(Icons.chevron_right_rounded),
+          buildListTile(
+            size,
+            impromptuGenerator,
+            "Impromptu Generator",
+            "An easy way to practice impromptu public speaking",
+            Icons.chevron_right_rounded,
           ),
-          ListTile(
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: size.width * 0.05,
-            ),
-            onTap: () {
-              _launchInBrowser(pristineScreen);
-            },
-            title: Text("Pristine Screen"),
-            subtitle: Text("An easy way to keep your Mac clean"),
-            trailing: Icon(Icons.chevron_right_rounded),
-          )
+          buildListTile(
+            size,
+            pristineScreen,
+            "Pristine Screen",
+            "An easy way to keep your Mac clean",
+            Icons.chevron_right_rounded,
+          ),
+          buildListTile(
+            size,
+            instagram,
+            "Instagram",
+            "Come check out my other content!",
+            CustomIcon.instagram,
+          ),
+          buildListTile(
+            size,
+            github,
+            "Github",
+            "Come check out my other code!",
+            CustomIcon.mark_github,
+          ),
         ],
       ),
+    );
+  }
+
+  ListTile buildListTile(
+    Size size,
+    String url,
+    String title,
+    String subtitle,
+    IconData icon,
+  ) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(
+        vertical: size.height * 0.03,
+        horizontal: size.width * 0.05,
+      ),
+      onTap: () {
+        _launchInBrowser(url);
+      },
+      title: Text("$title"),
+      subtitle: Text("$subtitle"),
+      trailing: Icon(icon),
     );
   }
 }

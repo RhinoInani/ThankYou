@@ -24,6 +24,7 @@ void main() async {
   firstTime = await userValues.get('firstTime', defaultValue: true);
   compression = await userValues.get('compression', defaultValue: 75);
   remainder = target - donated;
+  additionalInfo = await userValues.get('additionalInfo', defaultValue: false);
   initializeDateFormatting();
   await Hive.openBox<Item>('donations');
   runApp(MyApp());

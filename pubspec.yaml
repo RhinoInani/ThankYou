@@ -26,6 +26,7 @@ dependencies:
   universal_io: ^2.0.4
   pdf: ^3.8.1
   share_plus: ^4.0.9
+  csv: ^5.0.1
 #  keyboard_actions: ^3.4.6
 
 dev_dependencies:

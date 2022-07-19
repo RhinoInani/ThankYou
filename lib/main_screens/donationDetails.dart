@@ -109,6 +109,62 @@ class _DonationDetailsState extends State<DonationDetails> {
     });
   }
 
+  pw.Document createPDF() {
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (pw.Context context) => pw.Container(
+          child: pw.Column(
+            mainAxisAlignment: pw.MainAxisAlignment.start,
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Center(
+                child: pw.Text('Donation Receipt',
+                    style: pw.TextStyle(
+                      fontSize: 30,
+                      fontWeight: pw.FontWeight.bold,
+                    )),
+              ),
+              pw.Divider(
+                color: widget.item.isMoney!
+                    ? PdfColor.fromHex('#C1E1C1')
+                    : PdfColor.fromHex('#AED5F4'),
+                thickness: 1.7,
+                height: 10,
+              ),
+              pw.Text(
+                "Donation Type:\n${widget.item.isMoney! ? 'Money' : 'Items'}",
+                style: pdfMainBodyStyle(),
+              ),
+              pw.SizedBox(height: 15),
+              pw.Text('Recipient: \n${widget.item.recipient}',
+                  style: pdfMainBodyStyle()),
+              pw.SizedBox(height: 15),
+              pw.Text('Donation Date: \n${dateFormat(widget.item.date!)}',
+                  style: pdfMainBodyStyle()),
+              pw.SizedBox(height: 15),
+              pw.Text(
+                  '${widget.item.isMoney! ? 'Amount:' : 'Value:'} \n${moneyFormat.currencySymbol}${widget.item.amount}',
+                  style: pdfMainBodyStyle()),
+              pw.SizedBox(height: 15),
+              widget.item.notes!.length > 1
+                  ? pw.Text('Additional Notes: \n${widget.item.notes}',
+                      style: pdfMainBodyStyle())
+                  : pw.Container(),
+              pw.SizedBox(height: 15),
+              widget.item.imagePath.toString().length > 1
+                  ? pw.Image(pw.MemoryImage(
+                      File('${widget.item.imagePath}').readAsBytesSync(),
+                    ))
+                  : pw.Container(),
+            ],
+          ),
+        ),
+      ),
+    );
+    return pdf;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -130,61 +186,7 @@ class _DonationDetailsState extends State<DonationDetails> {
           ),
           IconButton(
             onPressed: () async {
-              final pdf = pw.Document();
-              pdf.addPage(
-                pw.Page(
-                  build: (pw.Context context) => pw.Container(
-                    child: pw.Column(
-                      mainAxisAlignment: pw.MainAxisAlignment.start,
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Center(
-                          child: pw.Text('Donation Receipt',
-                              style: pw.TextStyle(
-                                fontSize: 30,
-                                fontWeight: pw.FontWeight.bold,
-                              )),
-                        ),
-                        pw.Divider(
-                          color: widget.item.isMoney!
-                              ? PdfColor.fromHex('#C1E1C1')
-                              : PdfColor.fromHex('#AED5F4'),
-                          thickness: 1.7,
-                          height: 10,
-                        ),
-                        pw.Text(
-                          "Donation Type:\n${widget.item.isMoney! ? 'Money' : 'Items'}",
-                          style: pdfMainBodyStyle(),
-                        ),
-                        pw.SizedBox(height: 15),
-                        pw.Text('Recipient: \n${widget.item.recipient}',
-                            style: pdfMainBodyStyle()),
-                        pw.SizedBox(height: 15),
-                        pw.Text(
-                            'Donation Date: \n${dateFormat(widget.item.date!)}',
-                            style: pdfMainBodyStyle()),
-                        pw.SizedBox(height: 15),
-                        pw.Text(
-                            '${widget.item.isMoney! ? 'Amount:' : 'Value:'} \n${moneyFormat.currencySymbol}${widget.item.amount}',
-                            style: pdfMainBodyStyle()),
-                        pw.SizedBox(height: 15),
-                        widget.item.notes!.length > 1
-                            ? pw.Text(
-                                'Additional Notes: \n${widget.item.notes}',
-                                style: pdfMainBodyStyle())
-                            : pw.Container(),
-                        pw.SizedBox(height: 15),
-                        widget.item.imagePath.toString().length > 1
-                            ? pw.Image(pw.MemoryImage(
-                                File('${widget.item.imagePath}')
-                                    .readAsBytesSync(),
-                              ))
-                            : pw.Container(),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+              pw.Document pdf = createPDF();
               final directory = await getApplicationDocumentsDirectory();
               final file = File("${directory.path}/donationReceipt.pdf");
               await file.writeAsBytes(await pdf.save());

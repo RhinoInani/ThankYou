@@ -14,22 +14,24 @@ const mainGreen = Color.fromRGBO(193, 225, 193, 1);
 const mainBlue = Color.fromRGBO(174, 213, 244, 1);
 const mainRed = Color.fromRGBO(253, 111, 115, 1.0);
 
+//GOAL VALUES
 double target = 0.00;
 double remainder = 0.00;
 double donated = 0.00;
+
+//SETTINGS
 bool firstTime = true;
 bool goalsSet = false;
 int compression = 75;
+Item? editItem;
+List<String> selectedItems = [];
+ScrollController? homeController;
+bool additionalInfo = false;
 
-// String locale = "";
-// try { locale = ; } catch (e){
-//   locale = "US";
-// }
+//LOCALE WORK
 String localeMain = Platform.localeName.toString();
 var moneyFormat = NumberFormat.simpleCurrency(locale: localeMain);
 String currency = "${moneyFormat.currencySymbol}";
-
-Item? editItem;
 
 ///DO NOT ALTER CODE UNDER THIS LINE
 ///if you do run: flutter packages pub run build_runner build
